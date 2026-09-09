@@ -381,12 +381,12 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             {isEmployer ? 'Employer Profile' : 'Worker Profile'}
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-slate-400 text-xs sm:text-sm mt-1">
             Manage your personal and professional details on KarmaSetu Connect.
           </p>
         </div>
@@ -395,36 +395,36 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium text-sm shadow-lg shadow-cyan-500/20 transition-all cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition-all cursor-pointer"
           >
             <Edit3 className="w-4 h-4" />
-            Edit Profile
+            <span>Edit Profile</span>
           </button>
         )}
       </div>
 
       {/* SUCCESS / ERROR ALERTS */}
       {successMessage && (
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-sm font-medium shadow-lg animate-in fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+        <div className="flex items-center gap-2.5 sm:gap-3 p-3.5 sm:p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm font-medium shadow-lg animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 shrink-0" />
           <span>{successMessage}</span>
         </div>
       )}
 
       {errorMessage && (
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-sm font-medium shadow-lg animate-in fade-in">
-          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+        <div className="flex items-center gap-2.5 sm:gap-3 p-3.5 sm:p-4 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs sm:text-sm font-medium shadow-lg animate-in fade-in">
+          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-rose-400 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      <form onSubmit={handleSaveProfile} className="space-y-6">
+      <form onSubmit={handleSaveProfile} className="space-y-5 sm:space-y-6">
         {/* CARD 1: IDENTITY & AVATAR */}
-        <div className="glass-card p-6 md:p-8 space-y-6">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
+        <div className="glass-card p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
             {/* AVATAR DISPLAY */}
-            <div className="relative group">
-              <div className="w-24 h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700/80 flex items-center justify-center shadow-xl">
+            <div className="relative group shrink-0">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-slate-700/80 flex items-center justify-center shadow-xl">
                 {profilePhoto ? (
                   <img
                     src={profilePhoto}
@@ -432,7 +432,7 @@ export default function ProfilePage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                  <span className="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
                     {(name || 'U').charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -515,13 +515,13 @@ export default function ProfilePage() {
         </div>
 
         {/* CARD 2: DETAILS FORM */}
-        <div className="glass-card p-6 md:p-8 space-y-6">
-          <h3 className="text-lg font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
-            <User className="w-5 h-5 text-cyan-400" />
-            General Information
+        <div className="glass-card p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+          <h3 className="text-base sm:text-lg font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
+            <User className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
+            <span>General Information</span>
           </h3>
 
-          <div className="grid sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* FULL NAME */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -616,24 +616,24 @@ export default function ProfilePage() {
         </div>
 
         {/* CARD 3: ROLE-SPECIFIC DETAILS */}
-        <div className="glass-card p-6 md:p-8 space-y-6">
-          <h3 className="text-lg font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
+        <div className="glass-card p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
+          <h3 className="text-base sm:text-lg font-bold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
             {isEmployer ? (
               <>
-                <Building2 className="w-5 h-5 text-amber-400" />
-                Company Details
+                <Building2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+                <span>Company Details</span>
               </>
             ) : (
               <>
-                <Briefcase className="w-5 h-5 text-emerald-400" />
-                Professional & Work Details
+                <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+                <span>Professional & Work Details</span>
               </>
             )}
           </h3>
 
           {isEmployer ? (
             /* EMPLOYER FIELDS */
-            <div className="space-y-5">
+            <div className="space-y-4 sm:space-y-5">
               {/* EMPLOYER TYPE */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -685,8 +685,8 @@ export default function ProfilePage() {
             </div>
           ) : (
             /* WORKER FIELDS */
-            <div className="space-y-6">
-              <div className="grid sm:grid-cols-2 gap-6">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* SKILLS */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
@@ -758,31 +758,31 @@ export default function ProfilePage() {
 
         {/* ACTION BUTTONS (IN EDIT MODE) */}
         {isEditing && (
-          <div className="flex items-center justify-end gap-3 pt-2">
+          <div className="flex flex-wrap items-center justify-end gap-2.5 pt-2">
             <button
               type="button"
               onClick={handleCancelEdit}
               disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium border border-slate-700 transition cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-medium border border-slate-700 transition cursor-pointer disabled:opacity-50"
             >
               <X className="w-4 h-4" />
-              Cancel
+              <span>Cancel</span>
             </button>
 
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-sm font-semibold shadow-lg shadow-emerald-500/20 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-emerald-500/20 transition-all cursor-pointer disabled:opacity-50"
             >
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
+                  <span>Saving...</span>
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  Save Changes
+                  <span>Save Changes</span>
                 </>
               )}
             </button>
@@ -791,18 +791,18 @@ export default function ProfilePage() {
       </form>
 
       {/* BLOCKED USERS MANAGEMENT SECTION */}
-      <div className="glass-card bg-slate-900/90 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div className="glass-card bg-slate-900/90 border border-slate-800 p-4 sm:p-6 rounded-2xl shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
-              <Ban className="w-5 h-5" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <Ban className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white">Blocked Users</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white">Blocked Users</h3>
               <p className="text-xs text-slate-400">Manage users you have blocked from contacting or interacting with you</p>
             </div>
           </div>
-          <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+          <span className="self-start sm:self-auto px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
             {blockedUsers.length} blocked
           </span>
         </div>
@@ -819,32 +819,32 @@ export default function ProfilePage() {
         )}
 
         {loadingBlocked ? (
-          <div className="py-6 flex items-center justify-center text-slate-400 text-sm gap-2">
+          <div className="py-6 flex items-center justify-center text-slate-400 text-xs sm:text-sm gap-2">
             <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
             <span>Loading blocked users...</span>
           </div>
         ) : blockedUsers.length === 0 ? (
-          <div className="py-6 text-center text-slate-500 text-sm italic">
+          <div className="py-6 text-center text-slate-500 text-xs sm:text-sm italic">
             You have not blocked any users.
           </div>
         ) : (
           <div className="divide-y divide-slate-800">
             {blockedUsers.map((bu) => (
-              <div key={bu.id} className="py-3 flex items-center justify-between gap-4">
+              <div key={bu.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-semibold text-sm shrink-0">
                     {bu.blocked_user_name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-white truncate">{bu.blocked_user_name || 'User'}</p>
+                      <p className="text-xs sm:text-sm font-semibold text-white truncate">{bu.blocked_user_name || 'User'}</p>
                       {bu.blocked_user_role && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">
+                        <span className="px-1.5 sm:px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">
                           {bu.blocked_user_role}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-[11px] sm:text-xs text-slate-500">
                       Blocked on {new Date(bu.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -854,7 +854,7 @@ export default function ProfilePage() {
                   type="button"
                   disabled={unblockingId === bu.blocked_user_id}
                   onClick={() => handleUnblockUser(bu.blocked_user_id, bu.blocked_user_name)}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 border border-slate-700 hover:border-emerald-500/40 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shrink-0"
+                  className="self-end sm:self-auto px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-400 border border-slate-700 hover:border-emerald-500/40 text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shrink-0"
                 >
                   {unblockingId === bu.blocked_user_id ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />

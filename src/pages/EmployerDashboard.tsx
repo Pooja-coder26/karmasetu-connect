@@ -111,19 +111,19 @@ export default function EmployerDashboard() {
 
   return (
 
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
 
       {/* WELCOME */}
 
       <div>
 
-        <h1 className="text-4xl font-bold text-white">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
 
           Welcome back, {profile?.name}
 
         </h1>
 
-        <p className="text-slate-400 mt-2">
+        <p className="text-slate-400 mt-1 sm:mt-2 text-sm sm:text-base">
 
           Here is your live hiring overview.
 
@@ -133,21 +133,21 @@ export default function EmployerDashboard() {
 
       {/* STATS */}
 
-      <div className="grid md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
 
         {/* JOBS POSTED */}
 
-        <div className="glass-card p-6">
+        <div className="glass-card p-4 sm:p-5 lg:p-6">
 
           <div className="flex items-center justify-between">
 
             <div>
 
-              <p className="text-slate-400">
+              <p className="text-slate-400 text-xs sm:text-sm font-medium">
                 Jobs Posted
               </p>
 
-              <h2 className="text-5xl font-bold text-white mt-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-2 sm:mt-4">
 
                 {stats.jobsPosted}
 
@@ -155,7 +155,7 @@ export default function EmployerDashboard() {
 
             </div>
 
-            <Briefcase className="w-10 h-10 text-cyan-400" />
+            <Briefcase className="w-8 h-8 sm:w-10 sm:h-10 text-cyan-400 shrink-0" />
 
           </div>
 
@@ -163,17 +163,17 @@ export default function EmployerDashboard() {
 
         {/* APPLICATIONS */}
 
-        <div className="glass-card p-6">
+        <div className="glass-card p-4 sm:p-5 lg:p-6">
 
           <div className="flex items-center justify-between">
 
             <div>
 
-              <p className="text-slate-400">
+              <p className="text-slate-400 text-xs sm:text-sm font-medium">
                 Total Applications
               </p>
 
-              <h2 className="text-5xl font-bold text-white mt-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-2 sm:mt-4">
 
                 {stats.totalApplications}
 
@@ -181,7 +181,7 @@ export default function EmployerDashboard() {
 
             </div>
 
-            <FileText className="w-10 h-10 text-blue-400" />
+            <FileText className="w-8 h-8 sm:w-10 sm:h-10 text-blue-400 shrink-0" />
 
           </div>
 
@@ -189,17 +189,17 @@ export default function EmployerDashboard() {
 
         {/* PENDING */}
 
-        <div className="glass-card p-6">
+        <div className="glass-card p-4 sm:p-5 lg:p-6">
 
           <div className="flex items-center justify-between">
 
             <div>
 
-              <p className="text-slate-400">
+              <p className="text-slate-400 text-xs sm:text-sm font-medium">
                 Pending Review
               </p>
 
-              <h2 className="text-5xl font-bold text-yellow-400 mt-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-yellow-400 mt-2 sm:mt-4">
 
                 {stats.pendingApplications}
 
@@ -207,7 +207,7 @@ export default function EmployerDashboard() {
 
             </div>
 
-            <Users className="w-10 h-10 text-yellow-400" />
+            <Users className="w-8 h-8 sm:w-10 sm:h-10 text-yellow-400 shrink-0" />
 
           </div>
 
@@ -215,17 +215,17 @@ export default function EmployerDashboard() {
 
         {/* ACCEPTED */}
 
-        <div className="glass-card p-6">
+        <div className="glass-card p-4 sm:p-5 lg:p-6">
 
           <div className="flex items-center justify-between">
 
             <div>
 
-              <p className="text-slate-400">
+              <p className="text-slate-400 text-xs sm:text-sm font-medium">
                 Accepted
               </p>
 
-              <h2 className="text-5xl font-bold text-green-400 mt-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-green-400 mt-2 sm:mt-4">
 
                 {stats.acceptedApplications}
 
@@ -233,7 +233,7 @@ export default function EmployerDashboard() {
 
             </div>
 
-            <TrendingUp className="w-10 h-10 text-green-400" />
+            <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10 text-green-400 shrink-0" />
 
           </div>
 
@@ -243,9 +243,9 @@ export default function EmployerDashboard() {
 
       {/* RECENT JOBS */}
 
-      <div className="glass-card p-6">
+      <div className="glass-card p-4 sm:p-6">
 
-        <h2 className="text-2xl font-bold text-white mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">
 
           Recent Jobs
 
@@ -253,17 +253,17 @@ export default function EmployerDashboard() {
 
         {jobs.length === 0 ? (
 
-          <div className="py-10 text-center">
+          <div className="py-8 sm:py-10 text-center">
 
-            <Briefcase className="w-12 h-12 text-slate-600 mx-auto" />
+            <Briefcase className="w-10 h-10 sm:w-12 sm:h-12 text-slate-600 mx-auto" />
 
-            <p className="text-slate-400 mt-4 text-lg">
+            <p className="text-slate-400 mt-3 sm:mt-4 text-base sm:text-lg">
 
               You haven't posted any jobs yet.
 
             </p>
 
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm mt-1">
 
               Post your first job to start hiring workers.
 
@@ -273,24 +273,24 @@ export default function EmployerDashboard() {
 
         ) : (
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
 
             {jobs.map((job) => (
 
               <div
                 key={job.id}
-                className="p-5 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-between"
+                className="p-4 sm:p-5 rounded-2xl bg-slate-800/80 border border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4"
               >
 
-                <div>
+                <div className="min-w-0 flex-1">
 
-                  <h3 className="text-xl font-semibold text-white">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-white break-words">
 
                     {job.title}
 
                   </h3>
 
-                  <p className="text-slate-400 mt-1">
+                  <p className="text-slate-400 text-xs sm:text-sm mt-1 truncate">
 
                     {job.location}
 
@@ -298,9 +298,9 @@ export default function EmployerDashboard() {
 
                 </div>
 
-                <div className="text-right">
+                <div className="text-left sm:text-right shrink-0 pt-2 sm:pt-0 border-t sm:border-0 border-slate-700/50">
 
-                  <p className="text-cyan-400 text-xl font-bold">
+                  <p className="text-cyan-400 text-lg sm:text-xl font-bold">
 
                     ₹{job.wage}/day
 

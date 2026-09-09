@@ -1928,39 +1928,39 @@ export default function FindJobsPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
 
       {/* PAGE TITLE */}
 
       <div>
-        <h1 className="text-4xl font-bold text-white">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
           Find Jobs
         </h1>
 
-        <p className="text-slate-400 mt-2">
+        <p className="text-slate-400 mt-1.5 sm:mt-2 text-sm sm:text-base">
           Find suitable daily wage jobs near your location.
         </p>
       </div>
 
       {/* LOCATION */}
 
-      <div className="glass-card p-5">
+      <div className="glass-card p-4 sm:p-5">
 
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
           <div className="flex items-center gap-3">
 
-            <div className="p-3 rounded-xl bg-cyan-500/10">
-              <Navigation className="w-6 h-6 text-cyan-400" />
+            <div className="p-2.5 sm:p-3 rounded-xl bg-cyan-500/10 shrink-0">
+              <Navigation className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
             </div>
 
-            <div>
+            <div className="min-w-0 flex-1">
 
-              <p className="text-white font-semibold">
+              <p className="text-white font-semibold text-sm sm:text-base">
                 Location-based Hiring
               </p>
 
-              <p className="text-slate-400 text-sm">
+              <p className="text-slate-400 text-xs sm:text-sm truncate">
                 {locationMessage ||
                   'Detecting your location...'}
               </p>
@@ -1978,20 +1978,20 @@ export default function FindJobsPage() {
               locationLoading
             }
 
-            className="px-5 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-white font-semibold flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 text-white font-semibold text-sm sm:text-base flex items-center justify-center gap-2 transition cursor-pointer shadow-md"
           >
 
             {locationLoading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
 
-                Detecting...
+                <span>Detecting...</span>
               </>
             ) : (
               <>
-                <Navigation className="w-5 h-5" />
+                <Navigation className="w-4 h-4 sm:w-5 sm:h-5" />
 
-                Use My Location
+                <span>Use My Location</span>
               </>
             )}
 
@@ -2003,13 +2003,13 @@ export default function FindJobsPage() {
 
       {/* SEARCH & FILTERS */}
 
-      <div className="glass-card p-6 space-y-4">
+      <div className="glass-card p-4 sm:p-6 space-y-4">
 
         {/* ROW 1: KEYWORD SEARCH, LOCATION AUTOCOMPLETE, APPLY & CLEAR */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-12 gap-2.5 sm:gap-3">
 
           {/* 1. KEYWORD SEARCH */}
-          <div className="md:col-span-4 relative">
+          <div className="col-span-2 md:col-span-4 relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <Search className="w-4 h-4" />
             </div>
@@ -2021,12 +2021,12 @@ export default function FindJobsPage() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') handleSearch();
               }}
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 text-sm"
+              className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 text-xs sm:text-sm"
             />
           </div>
 
           {/* 2. LOCATION AUTOCOMPLETE SEARCH */}
-          <div className="md:col-span-4 relative" ref={suggestionsContainerRef}>
+          <div className="col-span-2 md:col-span-4 relative" ref={suggestionsContainerRef}>
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <MapPin className="w-4 h-4" />
             </div>
@@ -2049,7 +2049,7 @@ export default function FindJobsPage() {
                 }
               }}
               autoComplete="off"
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 text-sm"
+              className="w-full pl-10 pr-4 py-2.5 sm:py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 text-xs sm:text-sm"
             />
 
             {/* AUTOCOMPLETE DROPDOWN */}
@@ -2093,19 +2093,19 @@ export default function FindJobsPage() {
           {/* 3. APPLY / SEARCH BUTTON */}
           <button
             onClick={handleSearch}
-            className="md:col-span-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold py-3 px-4 transition-all shadow-lg shadow-cyan-500/20 text-sm"
+            className="col-span-1 md:col-span-2 flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold py-2.5 sm:py-3 px-3 sm:px-4 transition-all shadow-lg shadow-cyan-500/20 text-xs sm:text-sm cursor-pointer"
           >
-            <Search className="w-4 h-4" />
-            Apply Filters
+            <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="truncate">Apply</span>
           </button>
 
           {/* 4. CLEAR FILTERS BUTTON */}
           <button
             onClick={handleClearFilters}
-            className="md:col-span-2 flex items-center justify-center gap-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700 font-semibold py-3 px-4 transition-all text-sm"
+            className="col-span-1 md:col-span-2 flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700 font-semibold py-2.5 sm:py-3 px-3 sm:px-4 transition-all text-xs sm:text-sm cursor-pointer"
           >
-            <RotateCcw className="w-4 h-4" />
-            Clear
+            <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+            <span className="truncate">Clear</span>
           </button>
 
         </div>
@@ -2390,7 +2390,7 @@ export default function FindJobsPage() {
           </div>
         )}
 
-        <div className="relative w-full h-[400px] rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
+        <div className="relative w-full h-[260px] sm:h-[340px] md:h-[400px] lg:h-[460px] rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
           {/* Main Google Maps View */}
           <div
             ref={mapRef}
@@ -2398,11 +2398,11 @@ export default function FindJobsPage() {
           />
 
           {/* Clean Map-Type Switcher Control: ROADMAP / SATELLITE (Positioned at TOP-LEFT of existing Map) */}
-          <div className="absolute top-3 left-3 z-10 flex items-center bg-slate-900/95 backdrop-blur-md rounded-xl p-1 border border-slate-700 shadow-2xl">
+          <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 flex items-center bg-slate-900/95 backdrop-blur-md rounded-xl p-0.5 sm:p-1 border border-slate-700 shadow-2xl">
             <button
               type="button"
               onClick={switchToRoadmap}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 activeMapType === 'roadmap'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -2413,7 +2413,7 @@ export default function FindJobsPage() {
             <button
               type="button"
               onClick={switchToSatellite}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${
                 activeMapType === 'satellite'
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
@@ -2425,14 +2425,15 @@ export default function FindJobsPage() {
 
           {/* Clear Directions button on top right of map when route is active (positioned beside Fullscreen control) */}
           {activeRouteInfo && (
-            <div className="absolute top-3 right-14 z-10">
+            <div className="absolute top-2.5 sm:top-3 right-12 sm:right-14 z-10">
               <button
                 type="button"
                 onClick={handleClearDirections}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-900/95 hover:bg-slate-900 text-rose-400 hover:text-rose-300 border border-rose-500/50 shadow-xl backdrop-blur flex items-center gap-1.5 cursor-pointer transition-all"
+                className="px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-lg bg-slate-900/95 hover:bg-slate-900 text-rose-400 hover:text-rose-300 border border-rose-500/50 shadow-xl backdrop-blur flex items-center gap-1.5 cursor-pointer transition-all"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Clear Directions</span>
+                <span className="hidden sm:inline">Clear Directions</span>
+                <span className="sm:hidden">Clear</span>
               </button>
             </div>
           )}
@@ -2472,19 +2473,19 @@ export default function FindJobsPage() {
               <div
                 key={job.id}
                 id={`job-card-${job.id}`}
-                className={`glass-card p-6 transition-all duration-500 ${
+                className={`glass-card p-4 sm:p-6 transition-all duration-500 ${
                   highlightedJobId === job.id
                     ? 'ring-2 ring-cyan-400 bg-cyan-950/40 shadow-lg shadow-cyan-500/20'
                     : ''
                 }`}
               >
 
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-5">
 
-                  <div>
+                  <div className="flex-1 min-w-0">
 
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h2 className="text-2xl font-bold text-white">
+                      <h2 className="text-xl sm:text-2xl font-bold text-white break-words">
                         {job.title}
                       </h2>
                       {job.work_type && (
@@ -2494,20 +2495,20 @@ export default function FindJobsPage() {
                       )}
                     </div>
 
-                    <p className="text-slate-400 mt-2">
+                    <p className="text-slate-400 mt-2 text-sm sm:text-base">
                       {job.description}
                     </p>
 
-                    <div className="flex items-center gap-2 text-slate-300 mt-4">
+                    <div className="flex items-center gap-2 text-slate-300 mt-3 sm:mt-4 text-xs sm:text-sm">
 
-                      <MapPin className="w-4 h-4" />
+                      <MapPin className="w-4 h-4 shrink-0 text-slate-400" />
 
-                      {job.location}
+                      <span className="break-words">{job.location}</span>
 
                     </div>
 
                     {userLocation && (
-                      <div className="text-slate-400 text-sm mt-2 font-medium flex items-center gap-1.5">
+                      <div className="text-slate-400 text-xs sm:text-sm mt-2 font-medium flex items-center gap-1.5">
                         <span>📍</span>
                         {job.distanceKm !== undefined ? (
                           <span>
@@ -2523,7 +2524,7 @@ export default function FindJobsPage() {
                     )}
 
                     {activeRouteInfo?.jobId === job.id && (
-                      <div className="mt-3 p-3.5 rounded-xl bg-slate-900/95 border border-blue-500/40 space-y-2.5 shadow-sm">
+                      <div className="mt-3 p-3 sm:p-3.5 rounded-xl bg-slate-900/95 border border-blue-500/40 space-y-2.5 shadow-sm">
                         {/* Travel Mode Toggle & Clear Option */}
                         <div className="flex items-center justify-between gap-2 pb-2 border-b border-slate-800">
                           <div className="flex items-center gap-1.5">
@@ -2580,14 +2581,14 @@ export default function FindJobsPage() {
                               </span>
                             </div>
                             {activeRouteInfo.distance && (
-                              <p className="text-sm font-semibold text-blue-300 flex items-center gap-1.5">
+                              <p className="text-xs sm:text-sm font-semibold text-blue-300 flex items-center gap-1.5">
                                 <span>📍</span>
                                 <span>Road Distance:</span>
                                 <strong className="text-white font-bold">{activeRouteInfo.distance}</strong>
                               </p>
                             )}
                             {activeRouteInfo.duration && (
-                              <p className="text-sm font-semibold text-emerald-400 flex items-center gap-1.5">
+                              <p className="text-xs sm:text-sm font-semibold text-emerald-400 flex items-center gap-1.5">
                                 <span>🕒</span>
                                 <span>Estimated Travel Time:</span>
                                 <strong className="text-white font-bold">{activeRouteInfo.duration}</strong>
@@ -2598,13 +2599,13 @@ export default function FindJobsPage() {
                       </div>
                     )}
 
-                    <div className="mt-3 text-cyan-400 text-2xl font-bold">
+                    <div className="mt-3 text-cyan-400 text-xl sm:text-2xl font-bold">
                       ₹{job.wage}/day
                     </div>
 
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
+                  <div className="w-full lg:w-auto flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-3 pt-3 lg:pt-0 border-t border-slate-800/80 lg:border-0 shrink-0">
                     {job.employer_id && (
                       <div className="flex items-center gap-1.5">
                         <button
@@ -2615,7 +2616,7 @@ export default function FindJobsPage() {
                               name: job.employer_name || 'Employer',
                             })
                           }
-                          className="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-500/30 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
+                          className="px-2.5 sm:px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-500/30 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
                           title="Report Employer"
                         >
                           <Flag className="w-3.5 h-3.5" />
@@ -2630,7 +2631,7 @@ export default function FindJobsPage() {
                               name: job.employer_name || 'Employer',
                             })
                           }
-                          className="px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-amber-500/10 text-slate-400 hover:text-amber-400 border border-slate-700 hover:border-amber-500/30 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
+                          className="px-2.5 sm:px-3 py-2 rounded-xl bg-slate-800/80 hover:bg-amber-500/10 text-slate-400 hover:text-amber-400 border border-slate-700 hover:border-amber-500/30 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
                           title="Block Employer"
                         >
                           <Ban className="w-3.5 h-3.5" />
@@ -2649,7 +2650,7 @@ export default function FindJobsPage() {
                         }
                       }}
                       disabled={directionsLoading}
-                      className={`px-4 py-3 rounded-xl border text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 ${
                         activeRouteInfo?.jobId === job.id
                           ? 'bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border-rose-500/40'
                           : 'bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border-blue-500/40'
@@ -2675,7 +2676,7 @@ export default function FindJobsPage() {
                           job.id
                         )
                       }
-                      className="px-6 py-3 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold cursor-pointer"
+                      className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold text-xs sm:text-sm cursor-pointer shadow-md transition"
                     >
                       Apply
                     </button>

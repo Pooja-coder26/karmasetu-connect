@@ -670,21 +670,21 @@ export default function Layout({
 
             {/* LOGO */}
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
 
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
 
-                <Briefcase className="w-5 h-5 text-white" />
+                <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
 
               </div>
 
-              <div>
+              <div className="min-w-0">
 
-                <h1 className="text-lg font-bold tracking-wide">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight truncate">
                   KarmaSetu Connect
                 </h1>
 
-                <p className="text-xs text-slate-400 hidden sm:block">
+                <p className="text-[11px] text-slate-400 hidden sm:block truncate">
                   Daily Wage Hiring Platform
                 </p>
 
@@ -800,7 +800,7 @@ export default function Layout({
                 {/* DROPDOWN */}
 
                 {showNotifications && (
-                  <div className="absolute right-0 mt-3 w-80 sm:w-96 rounded-2xl bg-slate-900 border border-slate-700/60 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="fixed sm:absolute top-16 sm:top-full left-3 right-3 sm:left-auto sm:right-0 sm:mt-3 w-auto sm:w-96 max-w-sm sm:max-w-none rounded-2xl bg-slate-900 border border-slate-700/60 shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
 
                     {/* HEADER */}
 
@@ -994,12 +994,12 @@ export default function Layout({
 
               </div>
 
-              {/* USER PROFILE CHIP */}
+              {/* USER PROFILE CHIP (TABLET/DESKTOP) */}
 
               <button
                 type="button"
                 onClick={() => navigate('/profile')}
-                className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 hover:border-cyan-500/40 shadow-md transition-all cursor-pointer text-left group"
+                className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 hover:border-cyan-500/40 shadow-md transition-all cursor-pointer text-left group shrink-0"
                 title="View and Edit Profile"
               >
 
@@ -1021,9 +1021,9 @@ export default function Layout({
                   />
                 )}
 
-                <div>
+                <div className="min-w-0">
 
-                  <p className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors">
+                  <p className="text-sm font-medium text-white group-hover:text-cyan-300 transition-colors truncate max-w-[120px]">
                     {profile?.name}
                   </p>
 
@@ -1035,16 +1035,36 @@ export default function Layout({
 
               </button>
 
+              {/* MOBILE USER AVATAR */}
+              <button
+                type="button"
+                onClick={() => navigate('/profile')}
+                className="sm:hidden p-1.5 rounded-xl bg-slate-800/60 border border-slate-700/50 text-slate-300 hover:text-white"
+                title="Profile"
+              >
+                {profile?.profile_photo ? (
+                  <img
+                    src={profile.profile_photo}
+                    alt={profile.name}
+                    className="w-6 h-6 rounded-full object-cover border border-slate-600"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-cyan-600/30 text-cyan-400 flex items-center justify-center text-[10px] font-bold">
+                    {(profile?.name || 'U').charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </button>
+
               {/* LOGOUT */}
 
               <button
                 onClick={
                   handleSignOut
                 }
-                className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/50 text-slate-300 hover:text-red-400 hover:border-red-400/40 hover:bg-red-500/10 transition-all duration-300"
+                className="p-2 sm:p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/50 text-slate-300 hover:text-red-400 hover:border-red-400/40 hover:bg-red-500/10 transition-all duration-300"
                 title="Sign out"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
             </div>
@@ -1053,104 +1073,125 @@ export default function Layout({
 
         </div>
 
-        {/* MOBILE NAVIGATION */}
+      </header>
 
-        <div className="md:hidden border-t border-slate-700/40 px-2 py-2 flex gap-2 overflow-x-auto bg-slate-900/50">
-
-          {isAdmin ? (
+      {/* MOBILE BOTTOM NAVIGATION BAR */}
+      <nav
+        aria-label="Mobile Navigation"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80 px-2 py-1.5 flex items-center justify-around shadow-2xl"
+      >
+        {isAdmin ? (
+          <>
             <NavLink
               to="/admin"
-              className={navLinkClass}
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center flex-1 py-1 px-2 rounded-xl text-xs font-medium transition-colors ${
+                  isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+                }`
+              }
             >
-              <ShieldCheck className="w-4 h-4" />
-
-              <span className="whitespace-nowrap">
-                Admin
-              </span>
+              <ShieldCheck className="w-5 h-5 mb-0.5" />
+              <span>Admin</span>
             </NavLink>
-          ) : (
-            <>
-              <NavLink
-                to="/"
-                className={navLinkClass}
-              >
-                <LayoutDashboard className="w-4 h-4" />
 
-                <span className="whitespace-nowrap">
-                  Dashboard
-                </span>
-              </NavLink>
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center flex-1 py-1 px-2 rounded-xl text-xs font-medium transition-colors ${
+                  isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+                }`
+              }
+            >
+              <User className="w-5 h-5 mb-0.5" />
+              <span>Profile</span>
+            </NavLink>
+          </>
+        ) : (
+          <>
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl text-[11px] font-medium transition-colors ${
+                  isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+                }`
+              }
+            >
+              <LayoutDashboard className="w-5 h-5 mb-0.5" />
+              <span>Dashboard</span>
+            </NavLink>
 
-              {isEmployer ? (
-                <>
-                  <NavLink
-                    to="/post-job"
-                    className={navLinkClass}
-                  >
-                    <PlusCircle className="w-4 h-4" />
+            {isEmployer ? (
+              <>
+                <NavLink
+                  to="/post-job"
+                  className={({ isActive }) =>
+                    `flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl text-[11px] font-medium transition-colors ${
+                      isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+                    }`
+                  }
+                >
+                  <PlusCircle className="w-5 h-5 mb-0.5" />
+                  <span>Post Job</span>
+                </NavLink>
 
-                    <span className="whitespace-nowrap">
-                      Post Job
-                    </span>
-                  </NavLink>
+                <NavLink
+                  to="/my-jobs"
+                  className={({ isActive }) =>
+                    `flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl text-[11px] font-medium transition-colors ${
+                      isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+                    }`
+                  }
+                >
+                  <FileText className="w-5 h-5 mb-0.5" />
+                  <span>My Jobs</span>
+                </NavLink>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to="/jobs"
+                  className={({ isActive }) =>
+                    `flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl text-[11px] font-medium transition-colors ${
+                      isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+                    }`
+                  }
+                >
+                  <Search className="w-5 h-5 mb-0.5" />
+                  <span>Find Jobs</span>
+                </NavLink>
 
-                  <NavLink
-                    to="/my-jobs"
-                    className={navLinkClass}
-                  >
-                    <FileText className="w-4 h-4" />
+                <NavLink
+                  to="/applied-jobs"
+                  className={({ isActive }) =>
+                    `flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl text-[11px] font-medium transition-colors ${
+                      isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+                    }`
+                  }
+                >
+                  <ClipboardList className="w-5 h-5 mb-0.5" />
+                  <span>Applied</span>
+                </NavLink>
+              </>
+            )}
 
-                    <span className="whitespace-nowrap">
-                      My Jobs
-                    </span>
-                  </NavLink>
-                </>
-              ) : (
-                <>
-                  <NavLink
-                    to="/jobs"
-                    className={navLinkClass}
-                  >
-                    <Search className="w-4 h-4" />
-
-                    <span className="whitespace-nowrap">
-                      Find Jobs
-                    </span>
-                  </NavLink>
-
-                  <NavLink
-                    to="/applied-jobs"
-                    className={navLinkClass}
-                  >
-                    <ClipboardList className="w-4 h-4" />
-
-                    <span className="whitespace-nowrap">
-                      Applied
-                    </span>
-                  </NavLink>
-                </>
-              )}
-            </>
-          )}
-
-          <NavLink
-            to="/profile"
-            className={navLinkClass}
-          >
-            <User className="w-4 h-4" />
-
-            <span className="whitespace-nowrap">
-              Profile
-            </span>
-          </NavLink>
-
-        </div>
-
-      </header>
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl text-[11px] font-medium transition-colors ${
+                  isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'
+                }`
+              }
+            >
+              <User className="w-5 h-5 mb-0.5" />
+              <span>Profile</span>
+            </NavLink>
+          </>
+        )}
+      </nav>
 
       {/* MAIN */}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 md:pb-8">
         {children}
       </main>
 

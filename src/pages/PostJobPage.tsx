@@ -560,15 +560,15 @@ export default function PostJobPage() {
 
   return (
 
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
 
-      <div className="mb-8">
+      <div>
 
-        <h1 className="text-4xl font-bold text-white">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
           Post a New Job
         </h1>
 
-        <p className="text-slate-400 mt-2">
+        <p className="text-slate-400 mt-1 sm:mt-2 text-sm sm:text-base">
           Fill in the details to hire skilled daily wage workers.
         </p>
 
@@ -576,14 +576,14 @@ export default function PostJobPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="glass-card p-8 space-y-6"
+        className="glass-card p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6"
       >
 
         {/* WORK TYPE / CATEGORY */}
         <div>
-          <label className="flex items-center gap-2 text-white font-medium mb-3">
-            <Briefcase className="w-5 h-5 text-cyan-400" />
-            Work Type / Category <span className="text-red-400">*</span>
+          <label className="flex items-center gap-2 text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">
+            <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
+            <span>Work Type / Category</span> <span className="text-red-400">*</span>
           </label>
           <select
             name="workType"
@@ -596,7 +596,7 @@ export default function PostJobPage() {
               }
             }}
             required
-            className="w-full px-5 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-cyan-500 cursor-pointer text-base"
+            className="w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-cyan-500 cursor-pointer text-sm sm:text-base"
           >
             {WORK_TYPES.map((wt) => (
               <option key={wt.value} value={wt.value} className="bg-slate-800 text-white">
@@ -610,11 +610,11 @@ export default function PostJobPage() {
 
         <div>
 
-          <label className="flex items-center gap-2 text-white font-medium mb-3">
+          <label className="flex items-center gap-2 text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">
 
-            <Briefcase className="w-5 h-5" />
+            <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
 
-            Job Title
+            <span>Job Title</span>
 
           </label>
 
@@ -625,28 +625,28 @@ export default function PostJobPage() {
             onChange={handleChange}
             placeholder="Construction Worker, Painter..."
             required
-            className="w-full px-5 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-white"
+            className="w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-slate-800 border border-slate-700 text-white text-sm sm:text-base"
           />
 
         </div>
 
         {/* WORK TIMING (FROM / TO SELECTORS) */}
         <div>
-          <label className="flex items-center gap-2 text-white font-medium mb-3">
-            <Clock className="w-5 h-5 text-cyan-400" />
-            Work Timing
+          <label className="flex items-center gap-2 text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
+            <span>Work Timing</span>
           </label>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-xs text-slate-400 mb-2 font-medium">
+              <label className="block text-xs text-slate-400 mb-1.5 sm:mb-2 font-medium">
                 From:
               </label>
               <select
                 value={timingFrom}
                 onChange={(e) => handleFromChange(e.target.value)}
                 required
-                className="w-full px-5 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-cyan-500 cursor-pointer text-base"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-cyan-500 cursor-pointer text-sm sm:text-base"
               >
                 <option value="" disabled className="bg-slate-800 text-slate-400">
                   Select time
@@ -660,14 +660,14 @@ export default function PostJobPage() {
             </div>
 
             <div>
-              <label className="block text-xs text-slate-400 mb-2 font-medium">
+              <label className="block text-xs text-slate-400 mb-1.5 sm:mb-2 font-medium">
                 To:
               </label>
               <select
                 value={timingTo}
                 onChange={(e) => handleToChange(e.target.value)}
                 required
-                className="w-full px-5 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-cyan-500 cursor-pointer text-base"
+                className="w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:border-cyan-500 cursor-pointer text-sm sm:text-base"
               >
                 <option value="" disabled className="bg-slate-800 text-slate-400">
                   Select time
@@ -682,14 +682,14 @@ export default function PostJobPage() {
           </div>
 
           {timingError && (
-            <p className="text-xs text-rose-400 mt-2.5 flex items-center gap-1.5 font-medium">
+            <p className="text-xs text-rose-400 mt-2 flex items-center gap-1.5 font-medium">
               <span>⚠️</span>
               <span>{timingError}</span>
             </p>
           )}
 
           {timingFrom && timingTo && !timingError && (
-            <p className="text-xs text-emerald-400 mt-2.5 flex items-center gap-1.5 font-medium">
+            <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1.5 font-medium">
               <span>✓</span>
               <span>Working Hours: {timingFrom} to {timingTo}</span>
             </p>
@@ -700,11 +700,11 @@ export default function PostJobPage() {
 
         <div>
 
-          <label className="flex items-center gap-2 text-white font-medium mb-3">
+          <label className="flex items-center gap-2 text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">
 
-            <FileText className="w-5 h-5" />
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
 
-            Job Description
+            <span>Job Description</span>
 
           </label>
 
@@ -714,22 +714,22 @@ export default function PostJobPage() {
             onChange={handleChange}
             placeholder="Describe work details (optional)..."
             rows={4}
-            className="w-full px-5 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-white"
+            className="w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-slate-800 border border-slate-700 text-white text-sm sm:text-base"
           />
 
         </div>
 
         {/* WAGE + LOCATION */}
 
-        <div className="grid md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
 
           <div>
 
-            <label className="flex items-center gap-2 text-white font-medium mb-3">
+            <label className="flex items-center gap-2 text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">
 
-              <IndianRupee className="w-5 h-5" />
+              <IndianRupee className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
 
-              Wage Per Day
+              <span>Wage Per Day (₹)</span>
 
             </label>
 
@@ -740,15 +740,15 @@ export default function PostJobPage() {
               onChange={handleChange}
               placeholder="500"
               required
-              className="w-full px-5 py-4 rounded-2xl bg-slate-800 border border-slate-700 text-white"
+              className="w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-slate-800 border border-slate-700 text-white text-sm sm:text-base"
             />
 
           </div>
 
           <div ref={suggestionsContainerRef} className="relative">
-            <label className="flex items-center gap-2 text-white font-medium mb-3">
-              <MapPin className="w-5 h-5 text-cyan-400" />
-              Job Location / Address
+            <label className="flex items-center gap-2 text-white font-medium mb-2 sm:mb-3 text-sm sm:text-base">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
+              <span>Job Location / Address</span>
             </label>
 
             <div className="relative">
@@ -767,7 +767,7 @@ export default function PostJobPage() {
                 placeholder="Search location (e.g. Kar, Solade, Hebbal...)"
                 required
                 autoComplete="off"
-                className={`w-full px-5 py-4 rounded-2xl bg-slate-800 border text-white transition-all text-base ${
+                className={`w-full px-4 sm:px-5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl bg-slate-800 border text-white transition-all text-sm sm:text-base ${
                   isPlaceSelected
                     ? 'border-emerald-500/70 focus:border-emerald-400'
                     : 'border-slate-700 focus:border-cyan-500'
@@ -775,16 +775,16 @@ export default function PostJobPage() {
               />
 
               {isPlaceSelected && (
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                <span className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-emerald-500/30 flex items-center gap-1">
                   <CheckCircle className="w-3.5 h-3.5" />
-                  Verified
+                  <span>Verified</span>
                 </span>
               )}
 
               {/* ALL-INDIA AUTOCOMPLETE SUGGESTIONS DROPDOWN */}
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-slate-900/98 backdrop-blur-md border border-slate-700 rounded-2xl shadow-2xl overflow-hidden divide-y divide-slate-800">
-                  <div className="px-4 py-2 bg-slate-800/90 text-[11px] font-semibold text-cyan-400 uppercase tracking-wider flex items-center justify-between">
+                <div className="absolute top-full left-0 right-0 z-50 mt-1.5 sm:mt-2 bg-slate-900/98 backdrop-blur-md border border-slate-700 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden divide-y divide-slate-800">
+                  <div className="px-3 sm:px-4 py-2 bg-slate-800/90 text-[10px] sm:text-[11px] font-semibold text-cyan-400 uppercase tracking-wider flex items-center justify-between">
                     <span className="flex items-center gap-1.5">
                       <MapPin className="w-3.5 h-3.5" /> All-India Suggestions
                     </span>
@@ -801,16 +801,16 @@ export default function PostJobPage() {
                           e.preventDefault();
                           handleSelectSuggestion(item);
                         }}
-                        className="px-4 py-3 hover:bg-slate-800/90 cursor-pointer transition-colors flex items-start gap-3 group"
+                        className="px-3.5 sm:px-4 py-2.5 sm:py-3 hover:bg-slate-800/90 cursor-pointer transition-colors flex items-start gap-2.5 sm:gap-3 group"
                       >
-                        <div className="mt-0.5 w-7 h-7 rounded-xl bg-slate-800 group-hover:bg-cyan-500/20 group-hover:text-cyan-400 text-slate-400 flex items-center justify-center shrink-0 transition-colors">
-                          <MapPin className="w-4 h-4" />
+                        <div className="mt-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-lg sm:rounded-xl bg-slate-800 group-hover:bg-cyan-500/20 group-hover:text-cyan-400 text-slate-400 flex items-center justify-center shrink-0 transition-colors">
+                          <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-white group-hover:text-cyan-300 truncate">
+                          <p className="text-xs sm:text-sm font-semibold text-white group-hover:text-cyan-300 truncate">
                             {item.name}
                           </p>
-                          <p className="text-xs text-slate-400 truncate mt-0.5">
+                          <p className="text-[11px] sm:text-xs text-slate-400 truncate mt-0.5">
                             {item.secondary}
                           </p>
                         </div>
@@ -818,7 +818,7 @@ export default function PostJobPage() {
                     ))}
                   </ul>
 
-                  <div className="px-4 py-2 bg-slate-950/80 text-[10px] text-slate-400 flex items-center justify-between border-t border-slate-800">
+                  <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-slate-950/80 text-[10px] text-slate-400 flex items-center justify-between border-t border-slate-800">
                     <span>Select from Google Maps suggestions</span>
                     <span className="text-cyan-400 font-medium">Google Maps</span>
                   </div>
@@ -829,7 +829,7 @@ export default function PostJobPage() {
             {isPlaceSelected ? (
               <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1.5 font-medium">
                 <CheckCircle className="w-3.5 h-3.5" />
-                Selected: <span className="font-semibold">{form.location}</span> (Map centered & pinned)
+                Selected: <span className="font-semibold truncate">{form.location}</span> (Map centered & pinned)
               </p>
             ) : form.location.trim().length > 0 ? (
               <p className="text-xs text-amber-400/90 mt-2 flex items-center gap-1.5 font-medium">
@@ -845,8 +845,8 @@ export default function PostJobPage() {
           ref={panelRef}
           className={
             isFullscreen
-              ? 'fixed inset-0 z-50 bg-slate-950/95 p-4 sm:p-6 flex flex-col gap-3 backdrop-blur-md overflow-hidden'
-              : 'space-y-3 p-5 rounded-2xl bg-slate-900/70 border border-slate-700'
+              ? 'fixed inset-0 z-50 bg-slate-950/95 p-3 sm:p-6 flex flex-col gap-3 backdrop-blur-md overflow-hidden'
+              : 'space-y-3 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl bg-slate-900/70 border border-slate-700'
           }
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -865,14 +865,14 @@ export default function PostJobPage() {
                 <button
                   type="button"
                   onClick={() => setIsConfirmed(true)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                     isConfirmed
                       ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                      : 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white'
+                      : 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md'
                   }`}
                 >
                   <CheckCircle className="w-3.5 h-3.5" />
-                  {isConfirmed ? 'Location Confirmed' : 'Confirm Location'}
+                  <span>{isConfirmed ? 'Confirmed' : 'Confirm Location'}</span>
                 </button>
               )}
 
@@ -880,7 +880,7 @@ export default function PostJobPage() {
               <button
                 type="button"
                 onClick={toggleFullscreen}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 border ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 border cursor-pointer ${
                   isFullscreen
                     ? 'bg-rose-600 hover:bg-rose-500 text-white border-rose-500'
                     : 'bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border-slate-600'
@@ -911,7 +911,7 @@ export default function PostJobPage() {
                   value={form.location}
                   onChange={(e) => handleLocationInputChange(e.target.value)}
                   placeholder="Search location in India (e.g. Kar, Solade, Hebbal...)..."
-                  className="flex-1 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm"
+                  className="flex-1 px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs sm:text-sm"
                 />
               </div>
 
@@ -942,15 +942,15 @@ export default function PostJobPage() {
             ref={mapRef}
             className={
               isFullscreen
-                ? 'flex-1 w-full min-h-[350px] rounded-xl overflow-hidden border border-slate-700'
-                : 'w-full h-72 rounded-xl overflow-hidden border border-slate-700'
+                ? 'flex-1 w-full min-h-[280px] sm:min-h-[350px] rounded-xl overflow-hidden border border-slate-700'
+                : 'w-full h-60 sm:h-72 md:h-80 rounded-xl overflow-hidden border border-slate-700'
             }
           />
 
           {confirmedCoords ? (
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs bg-slate-800/80 px-4 py-2.5 rounded-xl border border-slate-700">
-              <span className="text-slate-300 flex items-center gap-1.5">
-                🔴 <strong className="text-white">Confirmed Worksite:</strong>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs bg-slate-800/80 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-700">
+              <span className="text-slate-300 flex items-center gap-1.5 flex-wrap">
+                <span>🔴</span> <strong className="text-white">Confirmed Worksite:</strong>
                 <span className="text-cyan-400 font-mono">
                   {confirmedCoords.lat.toFixed(6)}, {confirmedCoords.lng.toFixed(6)}
                 </span>
@@ -971,12 +971,12 @@ export default function PostJobPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full py-3.5 sm:py-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold text-base sm:text-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-cyan-500/20 cursor-pointer"
         >
 
           <PlusCircle className="w-5 h-5" />
 
-          {loading ? 'Posting...' : 'Post Job'}
+          <span>{loading ? 'Posting...' : 'Post Job'}</span>
 
         </button>
 

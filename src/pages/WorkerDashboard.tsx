@@ -174,34 +174,31 @@ export default function WorkerDashboard() {
 
   return (
 
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
 
       {/* HERO */}
 
-      <div className="rounded-3xl p-10 bg-gradient-to-r from-cyan-500 to-indigo-700">
+      <div className="rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 bg-gradient-to-r from-cyan-500 to-indigo-700 shadow-xl">
 
-        <h1 className="text-5xl font-bold text-white">
-
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white tracking-tight break-words">
           Welcome {profile?.name} 👋
         </h1>
 
-        <p className="text-white/80 mt-4 text-lg">
-
+        <p className="text-white/90 mt-2 sm:mt-4 text-sm sm:text-base md:text-lg">
           Explore nearby daily wage opportunities.
         </p>
 
         <button
           onClick={() => navigate('/jobs')}
-          className="mt-8 px-6 py-3 bg-white text-slate-900 rounded-2xl font-semibold hover:scale-105 transition-all"
+          className="mt-5 sm:mt-8 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-slate-900 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base hover:scale-105 transition-all inline-flex items-center justify-center shadow-md"
         >
-
           Explore Jobs →
         </button>
       </div>
 
       {/* SEARCH */}
 
-      <div className="glass-card p-6 grid md:grid-cols-3 gap-5">
+      <div className="glass-card p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
 
         <input
           type="text"
@@ -212,7 +209,7 @@ export default function WorkerDashboard() {
               e.target.value
             )
           }
-          className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white"
+          className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm sm:text-base"
         />
 
         <input
@@ -224,73 +221,66 @@ export default function WorkerDashboard() {
               e.target.value
             )
           }
-          className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white"
+          className="px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm sm:text-base"
         />
 
         <button
           onClick={handleSearch}
-          className="rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold"
+          className="py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-sm sm:text-base sm:col-span-2 md:col-span-1 shadow-lg shadow-cyan-500/20 transition-all cursor-pointer"
         >
-
           Search
         </button>
       </div>
 
       {/* JOBS */}
 
-      <div className="space-y-5">
+      <div className="space-y-4 sm:space-y-5">
 
         {filteredJobs.map((job) => (
 
           <div
             key={job.id}
-            className="glass-card p-6 flex items-center justify-between"
+            className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
           >
 
-            <div>
+            <div className="flex-1 min-w-0">
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3">
 
-                <Briefcase className="w-5 h-5 text-cyan-400" />
+                <Briefcase className="w-5 h-5 text-cyan-400 shrink-0" />
 
-                <h3 className="text-2xl font-semibold text-white">
-
+                <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white break-words">
                   {job.title}
                 </h3>
               </div>
 
-              <p className="text-slate-400 mt-3">
-
+              <p className="text-slate-400 mt-2 text-xs sm:text-sm line-clamp-2">
                 {job.description}
               </p>
 
-              <div className="flex items-center gap-2 mt-4 text-slate-400">
+              <div className="flex items-center gap-1.5 mt-3 text-xs sm:text-sm text-slate-300 truncate">
 
-                <MapPin className="w-4 h-4" />
+                <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
 
-                {job.location}
+                <span className="truncate">{job.location}</span>
               </div>
             </div>
 
-            <div className="text-right">
+            <div className="w-full sm:w-auto flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 pt-3 sm:pt-0 border-t border-slate-700/50 sm:border-0 shrink-0">
 
-              <h2 className="text-4xl font-bold text-cyan-400">
-
-                ₹{job.wage}
-              </h2>
-
-              <p className="text-slate-400 mb-4">
-
-                /day
-              </p>
+              <div className="flex items-baseline gap-1 sm:block sm:text-right">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-cyan-400">
+                  ₹{job.wage}
+                </h2>
+                <span className="text-slate-400 text-xs sm:text-sm">/day</span>
+              </div>
 
               <button
                 onClick={() =>
                   handleApply(job.id)
                 }
-                className="px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                className="px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm sm:text-base shadow-md transition-all cursor-pointer"
               >
-
                 Apply
               </button>
             </div>

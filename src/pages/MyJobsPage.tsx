@@ -401,17 +401,17 @@ export default function MyJobsPage() {
    */
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* SUCCESS FLASH BANNER */}
       {successMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-between gap-3 shadow-lg">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-400" />
-            <p className="text-sm font-medium">{successMsg}</p>
+        <div className="p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400" />
+            <p className="text-xs sm:text-sm font-medium truncate">{successMsg}</p>
           </div>
           <button
             onClick={() => setSuccessMsg(null)}
-            className="text-emerald-400 hover:text-white text-sm px-2 py-1 rounded-lg hover:bg-emerald-500/20"
+            className="text-emerald-400 hover:text-white text-sm px-2 py-1 rounded-lg hover:bg-emerald-500/20 shrink-0"
           >
             ✕
           </button>
@@ -419,82 +419,82 @@ export default function MyJobsPage() {
       )}
 
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             My Posted Jobs
           </h1>
-          <p className="text-slate-400 mt-1">
+          <p className="text-slate-400 mt-1 text-xs sm:text-sm">
             Manage your posted jobs, track worker hiring, and complete jobs.
           </p>
         </div>
 
         <Link
           to="/post-job"
-          className="px-5 py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-center shadow-lg shadow-cyan-500/20 transition cursor-pointer"
+          className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-center text-sm sm:text-base shadow-lg shadow-cyan-500/20 transition cursor-pointer"
         >
           Post New Job
         </Link>
       </div>
 
       {/* STATUS FILTER TABS */}
-      <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveFilter('ALL')}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
             activeFilter === 'ALL'
               ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
-          <Briefcase className="w-4 h-4" />
+          <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>All Jobs</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === 'ALL' ? 'bg-cyan-700 text-white' : 'bg-slate-700 text-slate-300'}`}>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] ${activeFilter === 'ALL' ? 'bg-cyan-700 text-white' : 'bg-slate-700 text-slate-300'}`}>
             {allCount}
           </span>
         </button>
 
         <button
           onClick={() => setActiveFilter('OPEN')}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
             activeFilter === 'OPEN'
               ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
-          <Clock className="w-4 h-4" />
+          <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>Active / Open</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === 'OPEN' ? 'bg-blue-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] ${activeFilter === 'OPEN' ? 'bg-blue-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
             {openCount}
           </span>
         </button>
 
         <button
           onClick={() => setActiveFilter('HIRED')}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
             activeFilter === 'HIRED'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
-          <Users className="w-4 h-4" />
+          <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>Worker Hired</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === 'HIRED' ? 'bg-emerald-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] ${activeFilter === 'HIRED' ? 'bg-emerald-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
             {hiredCount}
           </span>
         </button>
 
         <button
           onClick={() => setActiveFilter('COMPLETED')}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
             activeFilter === 'COMPLETED'
               ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
-          <CheckCircle2 className="w-4 h-4" />
+          <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>Completed</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === 'COMPLETED' ? 'bg-purple-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] ${activeFilter === 'COMPLETED' ? 'bg-purple-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
             {completedCount}
           </span>
         </button>
@@ -539,14 +539,14 @@ export default function MyJobsPage() {
             return (
               <div
                 key={job.id}
-                className="glass-card p-6 transition-all hover:border-slate-600/60"
+                className="glass-card p-4 sm:p-6 transition-all hover:border-slate-600/60"
               >
-                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 sm:gap-5">
                   {/* LEFT */}
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     {/* TITLE & STATUS BADGE */}
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h2 className="text-xl font-bold text-white">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <h2 className="text-lg sm:text-xl font-bold text-white break-words">
                         {job.title}
                       </h2>
 
@@ -579,7 +579,7 @@ export default function MyJobsPage() {
                       )}
                     </div>
 
-                    <p className="text-slate-400 mt-2">
+                    <p className="text-slate-400 mt-2 text-sm sm:text-base">
                       {job.description}
                     </p>
 
@@ -709,24 +709,24 @@ export default function MyJobsPage() {
                   </div>
 
                   {/* RIGHT ACTION BUTTONS */}
-                  <div className="flex flex-wrap items-center gap-3 self-start">
+                  <div className="w-full lg:w-auto flex flex-wrap items-center gap-2 sm:gap-3 self-stretch lg:self-start pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-800/80">
                     {/* ACTIONS FOR HIRED JOBS */}
                     {status === 'HIRED' && (
                       <>
                         <button
                           type="button"
                           onClick={() => setJobToComplete(job)}
-                          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition cursor-pointer"
+                          className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 shadow-lg shadow-emerald-500/20 transition cursor-pointer"
                           title="Mark Job as Completed"
                         >
                           <CheckCircle2 className="w-4 h-4" />
-                          <span>Mark Job as Completed</span>
+                          <span>Mark Completed</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => handleInitiateNoShow(job)}
-                          className="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-semibold text-sm flex items-center gap-2 transition cursor-pointer"
+                          className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-semibold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 transition cursor-pointer"
                           title="Mark Worker as No-Show & Reopen Job"
                         >
                           <AlertTriangle className="w-4 h-4" />
@@ -737,15 +737,16 @@ export default function MyJobsPage() {
 
                     <Link
                       to={`/applicants/${job.id}`}
-                      className="px-4 py-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30 font-medium text-sm transition"
+                      className="px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30 font-medium text-xs sm:text-sm transition flex items-center gap-1.5"
                     >
-                      View Applicants
+                      <Users className="w-3.5 h-3.5 sm:hidden" />
+                      <span>View Applicants</span>
                     </Link>
 
                     {status !== 'COMPLETED' && (
                       <button
                         onClick={() => handleDelete(job.id)}
-                        className="p-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition cursor-pointer"
+                        className="p-2 sm:p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition cursor-pointer"
                         title="Delete Job"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -761,23 +762,23 @@ export default function MyJobsPage() {
 
       {/* CONFIRMATION MODAL FOR MARK JOB AS COMPLETED */}
       {jobToComplete && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="glass-card bg-slate-900 border border-slate-700 p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="glass-card bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl max-w-md w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                <CheckCircle2 className="w-6 h-6" />
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-white">Mark Job as Completed</h3>
-                <p className="text-xs text-slate-400">Finalize job & notify worker</p>
+              <div className="min-w-0">
+                <h3 className="text-lg sm:text-xl font-bold text-white break-words">Mark Job as Completed</h3>
+                <p className="text-xs text-slate-400 truncate">Finalize job & notify worker</p>
               </div>
             </div>
 
-            <p className="text-slate-300 text-sm leading-relaxed">
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
               Are you sure you want to mark the job <strong className="text-white">"{jobToComplete.title}"</strong> as completed?
             </p>
 
-            <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-xs text-slate-400">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-2 text-xs text-slate-400">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 <span>Job lifecycle transitions to <strong className="text-emerald-400">COMPLETED</strong>.</span>
@@ -792,12 +793,12 @@ export default function MyJobsPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+            <div className="flex flex-wrap items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
               <button
                 type="button"
                 disabled={isSubmitting}
                 onClick={() => setJobToComplete(null)}
-                className="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 font-medium text-sm transition cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 font-medium text-xs sm:text-sm transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -806,17 +807,17 @@ export default function MyJobsPage() {
                 type="button"
                 disabled={isSubmitting}
                 onClick={() => handleCompleteJob(jobToComplete.id)}
-                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold text-sm transition flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
+                className="w-full sm:w-auto px-5 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
               >
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Completing...
+                    <span>Completing...</span>
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4" />
-                    Yes, Mark Completed
+                    <span>Yes, Mark Completed</span>
                   </>
                 )}
               </button>

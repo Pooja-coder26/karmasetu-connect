@@ -817,7 +817,7 @@ export default function AuthPage() {
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
+    <div className="min-h-screen flex items-center justify-center py-6 sm:py-10 px-3 sm:px-6 relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950">
 
       {/* Background */}
 
@@ -826,7 +826,7 @@ export default function AuthPage() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/20 blur-[120px] rounded-full" />
 
 
-      <div className="relative z-10 w-full max-w-6xl grid lg:grid-cols-2 gap-10 items-center">
+      <div className="relative z-10 w-full max-w-6xl grid lg:grid-cols-2 gap-8 lg:gap-10 items-center">
 
 
         {/* =================================================
@@ -932,28 +932,28 @@ export default function AuthPage() {
 
         <div className="w-full max-w-md mx-auto">
 
-          <div className="bg-slate-900/70 backdrop-blur-2xl border border-slate-700/40 rounded-3xl p-8 shadow-2xl">
+          <div className="bg-slate-900/70 backdrop-blur-2xl border border-slate-700/40 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
 
 
             {/* MOBILE LOGO */}
 
-            <div className="lg:hidden text-center mb-8">
+            <div className="lg:hidden text-center mb-6 sm:mb-8">
 
               <div className="inline-flex items-center gap-3">
 
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center">
 
-                  <Briefcase className="w-6 h-6 text-white" />
+                  <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
 
                 </div>
 
                 <div className="text-left">
 
-                  <h1 className="text-2xl font-bold text-white">
+                  <h1 className="text-xl sm:text-2xl font-bold text-white">
                     KarmaSetu
                   </h1>
 
-                  <p className="text-slate-400 text-sm">
+                  <p className="text-slate-400 text-xs sm:text-sm">
                     Hiring Platform
                   </p>
 
@@ -970,14 +970,14 @@ export default function AuthPage() {
 
             {mode !== 'forgot' && (
 
-              <div className="flex bg-slate-800/60 rounded-2xl p-1 mb-7">
+              <div className="flex bg-slate-800/60 rounded-xl sm:rounded-2xl p-1 mb-5 sm:mb-7">
 
                 <button
                   type="button"
                   onClick={() =>
                     switchMode('login')
                   }
-                  className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${
+                  className={`flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                     mode === 'login'
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
                       : 'text-slate-400 hover:text-white'
@@ -992,7 +992,7 @@ export default function AuthPage() {
                   onClick={() =>
                     switchMode('register')
                   }
-                  className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${
+                  className={`flex-1 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
                     mode === 'register'
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg'
                       : 'text-slate-400 hover:text-white'

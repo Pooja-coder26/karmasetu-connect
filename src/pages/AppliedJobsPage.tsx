@@ -238,77 +238,77 @@ export default function AppliedJobsPage() {
   }, [location.state, applications, activeFilter]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
             My Applications & Job History
           </h1>
-          <p className="text-slate-400 mt-1">
+          <p className="text-slate-400 mt-1 text-xs sm:text-sm">
             Track your job applications, current hiring status, and completed work history.
           </p>
         </div>
       </div>
 
       {/* FILTER TABS */}
-      <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-slate-800/60 border border-slate-700/60 overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveFilter('ALL')}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
             activeFilter === 'ALL'
               ? 'bg-cyan-500 text-white shadow-md shadow-cyan-500/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
-          <Briefcase className="w-4 h-4" />
+          <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>All Applications</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === 'ALL' ? 'bg-cyan-700 text-white' : 'bg-slate-700 text-slate-300'}`}>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] ${activeFilter === 'ALL' ? 'bg-cyan-700 text-white' : 'bg-slate-700 text-slate-300'}`}>
             {allCount}
           </span>
         </button>
 
         <button
           onClick={() => setActiveFilter('APPLIED')}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
             activeFilter === 'APPLIED'
               ? 'bg-amber-500 text-slate-900 shadow-md shadow-amber-500/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
-          <Clock className="w-4 h-4" />
+          <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>Applied / Pending</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === 'APPLIED' ? 'bg-amber-600 text-slate-900 font-bold' : 'bg-slate-700 text-slate-300'}`}>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] ${activeFilter === 'APPLIED' ? 'bg-amber-600 text-slate-900 font-bold' : 'bg-slate-700 text-slate-300'}`}>
             {appliedCount}
           </span>
         </button>
 
         <button
           onClick={() => setActiveFilter('HIRED')}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
             activeFilter === 'HIRED'
               ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
-          <CheckCircle className="w-4 h-4" />
+          <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>Hired</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === 'HIRED' ? 'bg-emerald-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] ${activeFilter === 'HIRED' ? 'bg-emerald-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
             {hiredCount}
           </span>
         </button>
 
         <button
           onClick={() => setActiveFilter('COMPLETED')}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold transition cursor-pointer flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer flex items-center gap-1.5 sm:gap-2 whitespace-nowrap shrink-0 ${
             activeFilter === 'COMPLETED'
               ? 'bg-purple-600 text-white shadow-md shadow-purple-600/20'
               : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
           }`}
         >
-          <CheckCircle2 className="w-4 h-4" />
+          <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>Completed</span>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${activeFilter === 'COMPLETED' ? 'bg-purple-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] ${activeFilter === 'COMPLETED' ? 'bg-purple-800 text-white' : 'bg-slate-700 text-slate-300'}`}>
             {completedCount}
           </span>
         </button>
@@ -340,7 +340,7 @@ export default function AppliedJobsPage() {
               <div
                 key={app.id}
                 id={`application-card-${app.id}`}
-                className={`glass-card p-6 transition-all duration-500 hover:border-slate-600/60 ${
+                className={`glass-card p-4 sm:p-6 transition-all duration-500 hover:border-slate-600/60 ${
                   highlightedAppId === app.id
                     ? 'ring-2 ring-cyan-400 bg-cyan-950/40 shadow-lg shadow-cyan-500/20'
                     : ''
@@ -348,10 +348,10 @@ export default function AppliedJobsPage() {
               >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                   {/* LEFT: JOB INFO */}
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     {/* TITLE & PRIMARY BADGE */}
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h2 className="text-xl font-bold text-white">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <h2 className="text-lg sm:text-xl font-bold text-white break-words">
                         {app.job_title}
                       </h2>
 
@@ -500,11 +500,11 @@ export default function AppliedJobsPage() {
                   </div>
 
                   {/* RIGHT: ACTION BUTTON */}
-                  <div className="flex flex-wrap md:flex-col items-center md:items-end justify-between md:justify-start gap-2 mt-4 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-800/80 flex-shrink-0">
+                  <div className="w-full md:w-auto flex flex-wrap items-center justify-between md:justify-end gap-2 mt-4 md:mt-0 pt-3 md:pt-0 border-t md:border-t-0 border-slate-800/80 shrink-0">
                     <button
                       type="button"
                       onClick={() => setSelectedJobForDetails(app)}
-                      className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-500/50 text-cyan-400 hover:text-cyan-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-cyan-500/10"
+                      className="flex-1 sm:flex-initial px-3.5 sm:px-4 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 hover:border-cyan-500/50 text-cyan-400 hover:text-cyan-300 font-semibold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                     >
                       <Eye className="w-4 h-4" />
                       <span>View Job</span>
@@ -553,25 +553,25 @@ export default function AppliedJobsPage() {
 
       {/* JOB DETAILS MODAL */}
       {selectedJobForDetails && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="glass-card bg-slate-900 border border-slate-700 p-6 rounded-2xl max-w-lg w-full shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="glass-card bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl max-w-lg w-full shadow-2xl space-y-4 sm:space-y-5 max-h-[90vh] overflow-y-auto">
             {/* MODAL HEADER */}
-            <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                  <Briefcase className="w-6 h-6" />
+            <div className="flex items-start justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-800">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+                  <Briefcase className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">
+                <div className="min-w-0">
+                  <h3 className="text-lg sm:text-xl font-bold text-white break-words">
                     {selectedJobForDetails.job_title}
                   </h3>
-                  <p className="text-xs text-slate-400">Job Details & Application Overview</p>
+                  <p className="text-xs text-slate-400 truncate">Job Details & Application Overview</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedJobForDetails(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                className="p-1.5 sm:p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer shrink-0"
                 title="Close"
               >
                 <X className="w-5 h-5" />
@@ -721,9 +721,9 @@ export default function AppliedJobsPage() {
             </div>
 
             {/* MODAL FOOTER */}
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-slate-800">
               {selectedJobForDetails.employer_id ? (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() =>
@@ -732,10 +732,10 @@ export default function AppliedJobsPage() {
                         name: selectedJobForDetails.employer_name || 'Employer',
                       })
                     }
-                    className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-500/30 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
+                    className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-800 hover:bg-rose-500/10 text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-500/30 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
                   >
                     <Flag className="w-3.5 h-3.5" />
-                    <span>Report Employer</span>
+                    <span>Report</span>
                   </button>
                   <button
                     type="button"
@@ -745,10 +745,10 @@ export default function AppliedJobsPage() {
                         name: selectedJobForDetails.employer_name || 'Employer',
                       })
                     }
-                    className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-amber-500/10 text-slate-400 hover:text-amber-400 border border-slate-700 hover:border-amber-500/30 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
+                    className="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-slate-800 hover:bg-amber-500/10 text-slate-400 hover:text-amber-400 border border-slate-700 hover:border-amber-500/30 text-xs font-medium transition cursor-pointer flex items-center gap-1.5"
                   >
                     <Ban className="w-3.5 h-3.5" />
-                    <span>Block Employer</span>
+                    <span>Block</span>
                   </button>
                 </div>
               ) : <div />}
@@ -756,7 +756,7 @@ export default function AppliedJobsPage() {
               <button
                 type="button"
                 onClick={() => setSelectedJobForDetails(null)}
-                className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-sm transition cursor-pointer border border-slate-700"
+                className="w-full sm:w-auto px-5 py-2 sm:py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs sm:text-sm transition cursor-pointer border border-slate-700"
               >
                 Close
               </button>

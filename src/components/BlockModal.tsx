@@ -55,8 +55,8 @@ export default function BlockModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="glass-card bg-slate-900 border border-slate-700 p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4">
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+      <div className="glass-card bg-slate-900 border border-slate-700 p-4 sm:p-6 rounded-2xl max-w-sm w-full shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
         {/* HEADER */}
         <div className="flex items-start justify-between gap-4 pb-2 border-b border-slate-800">
           <div className="flex items-center gap-3">
@@ -98,12 +98,12 @@ export default function BlockModal({
         </div>
 
         {/* ACTIONS */}
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex items-center justify-end gap-2 sm:gap-3 pt-2">
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm transition cursor-pointer"
+            className="flex-1 sm:flex-none justify-center px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-sm transition cursor-pointer text-center"
           >
             Cancel
           </button>
@@ -111,7 +111,7 @@ export default function BlockModal({
             type="button"
             onClick={handleBlock}
             disabled={isSubmitting}
-            className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-semibold text-sm transition cursor-pointer flex items-center gap-2"
+            className="flex-1 sm:flex-none justify-center px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-semibold text-sm transition cursor-pointer flex items-center gap-2 text-center"
           >
             {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
             <span>Block User</span>
