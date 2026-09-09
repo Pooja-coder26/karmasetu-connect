@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import {
   MapPin,
@@ -11,6 +12,7 @@ import { getAuthHeaders } from '../lib/authHeader';
 import { API_BASE_URL } from '../lib/config';
 
 export default function WorkerDashboard() {
+  const navigate = useNavigate();
 
   const { profile } = useAuth();
 
@@ -155,8 +157,7 @@ export default function WorkerDashboard() {
       alert(data);
 
       if (response.ok) {
-        window.location.href =
-          '/applied-jobs';
+        navigate('/applied-jobs');
       } else {
         fetchJobs();
       }
@@ -190,10 +191,7 @@ export default function WorkerDashboard() {
         </p>
 
         <button
-          onClick={() =>
-            window.location.href =
-              '/jobs'
-          }
+          onClick={() => navigate('/jobs')}
           className="mt-8 px-6 py-3 bg-white text-slate-900 rounded-2xl font-semibold hover:scale-105 transition-all"
         >
 

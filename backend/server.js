@@ -31,22 +31,39 @@ if (!TEXTBEE_DEVICE_ID || !TEXTBEE_API_KEY) {
 
 const otpStore = new Map();
 
+function normalizeIndianPhone(phone) {
+  if (!phone || typeof phone !== "string") return null;
+
+  const trimmed = phone.trim();
+  if (!trimmed) return null;
+
+  let value = trimmed.replace(/[\s()-]/g, "");
+
+  // If starts with +91 and 10 digits starting with 6-9
+  if (/^\+91[6-9]\d{9}$/.test(value)) {
+    return value;
+  }
+
+  // If starts with 91 and 10 digits starting with 6-9
+  if (/^91[6-9]\d{9}$/.test(value)) {
+    return "+" + value;
+  }
+
+  // If starts with 0 and 10 digits starting with 6-9
+  if (/^0[6-9]\d{9}$/.test(value)) {
+    return "+91" + value.slice(1);
+  }
+
+  // If exactly 10 digits starting with 6-9
+  if (/^[6-9]\d{9}$/.test(value)) {
+    return "+91" + value;
+  }
+
+  return null;
+}
+
 function normalizePhone(phone) {
-  if (!phone) return null;
-
-  let value = String(phone).trim();
-
-  value = value.replace(/[\s()-]/g, "");
-
-  if (/^\d{10}$/.test(value)) {
-    value = "+91" + value;
-  }
-
-  if (/^91\d{10}$/.test(value)) {
-    value = "+" + value;
-  }
-
-  return value;
+  return normalizeIndianPhone(phone);
 }
 
 /* =====================================================
@@ -721,19 +738,20 @@ app.get("/", (req, res) => {
 ===================================================== */
 
 app.post("/send-otp", async (req, res) => {
-  const { phone } = req.body;
+  const { phone } = req.body || {};
 
-  if (!phone) {
+  if (!phone || typeof phone !== "string" || !phone.trim()) {
     return res.status(400).json({
+      success: false,
       message: "Phone number is required",
     });
   }
 
-  const normalizedPhone =
-    normalizePhone(phone);
+  const normalizedPhone = normalizeIndianPhone(phone);
 
-  if (!normalizedPhone || !/^\+91\d{10}$/.test(normalizedPhone)) {
+  if (!normalizedPhone) {
     return res.status(400).json({
+      success: false,
       message: "Please enter a valid 10-digit Indian phone number",
     });
   }
@@ -741,6 +759,7 @@ app.post("/send-otp", async (req, res) => {
   const lock = acquireOtpSendLock(normalizedPhone);
   if (!lock.allowed) {
     return res.status(429).json({
+      success: false,
       message: lock.reason,
     });
   }
@@ -755,6 +774,7 @@ app.post("/send-otp", async (req, res) => {
           releaseOtpSendLock(normalizedPhone, false);
 
           return res.status(500).json({
+            success: false,
             message: "Database Error",
           });
         }
@@ -763,8 +783,8 @@ app.post("/send-otp", async (req, res) => {
           releaseOtpSendLock(normalizedPhone, false);
 
           return res.status(400).json({
-            message:
-              "Phone number already registered",
+            success: false,
+            message: "Phone number already registered",
           });
         }
 
@@ -775,8 +795,7 @@ app.post("/send-otp", async (req, res) => {
             `${normalizedPhone}:register`,
             {
               otp,
-              expiresAt:
-                Date.now() + 5 * 60 * 1000,
+              expiresAt: Date.now() + 5 * 60 * 1000,
               verified: false,
             }
           );
@@ -794,8 +813,7 @@ app.post("/send-otp", async (req, res) => {
 
           return res.json({
             success: true,
-            message:
-              "OTP sent successfully",
+            message: "OTP sent successfully",
           });
 
         } catch (error) {
@@ -807,6 +825,7 @@ app.post("/send-otp", async (req, res) => {
           );
 
           return res.status(500).json({
+            success: false,
             message:
               error.message ||
               "Failed to send OTP",
@@ -819,7 +838,8 @@ app.post("/send-otp", async (req, res) => {
     releaseOtpSendLock(normalizedPhone, false);
     console.log(error);
 
-    res.status(500).json({
+    return res.status(500).json({
+      success: false,
       message: "Failed to send OTP",
     });
   }
@@ -833,21 +853,31 @@ app.post("/verify-otp", async (req, res) => {
   const {
     phone,
     code,
-  } = req.body;
+  } = req.body || {};
 
-  if (!phone || !code) {
+  if (!phone || typeof phone !== "string" || !phone.trim() || !code) {
     return res.status(400).json({
+      success: false,
       message:
         "Phone number and OTP are required",
     });
   }
 
   const normalizedPhone =
-    normalizePhone(phone);
+    normalizeIndianPhone(phone);
 
-  if (!normalizedPhone || !/^\+91\d{10}$/.test(normalizedPhone)) {
+  if (!normalizedPhone) {
     return res.status(400).json({
+      success: false,
       message: "Please enter a valid 10-digit Indian phone number",
+    });
+  }
+
+  const cleanedCode = String(code).trim();
+  if (!/^\d{6}$/.test(cleanedCode)) {
+    return res.status(400).json({
+      success: false,
+      message: "Please enter a valid 6-digit OTP code",
     });
   }
 
@@ -858,6 +888,7 @@ app.post("/verify-otp", async (req, res) => {
 
   if (!otpData) {
     return res.status(400).json({
+      success: false,
       message:
         "OTP not found. Please request a new OTP.",
     });
@@ -872,24 +903,27 @@ app.post("/verify-otp", async (req, res) => {
     );
 
     return res.status(400).json({
+      success: false,
       message:
         "OTP expired. Please request a new OTP.",
     });
   }
 
   if (
-    String(code).trim() !==
-    String(otpData.otp)
+    cleanedCode !==
+    String(otpData.otp).trim()
   ) {
     otpData.attempts = (otpData.attempts || 0) + 1;
     if (otpData.attempts >= 5) {
       otpStore.delete(`${normalizedPhone}:register`);
       return res.status(400).json({
+        success: false,
         message: "Too many failed attempts. This OTP has been invalidated. Please request a new OTP.",
       });
     }
     otpStore.set(`${normalizedPhone}:register`, otpData);
     return res.status(400).json({
+      success: false,
       message: `Invalid OTP. ${5 - otpData.attempts} attempt(s) remaining.`,
     });
   }
@@ -1409,28 +1443,28 @@ app.post("/login", (req, res) => {
 app.post(
   "/forgot-password/send-otp",
   async (req, res) => {
+    const { phone } = req.body || {};
 
-    const { phone } = req.body;
-
-    if (!phone) {
+    if (!phone || typeof phone !== "string" || !phone.trim()) {
       return res.status(400).json({
-        message:
-          "Phone number is required",
+        success: false,
+        message: "Phone number is required",
       });
     }
 
-    const normalizedPhone =
-      normalizePhone(phone);
+    const normalizedPhone = normalizeIndianPhone(phone);
 
-    if (!normalizedPhone || !/^\+91\d{10}$/.test(normalizedPhone)) {
+    if (!normalizedPhone) {
       return res.status(400).json({
-        message: "Invalid phone number format. Please provide a valid 10-digit Indian mobile number.",
+        success: false,
+        message: "Please enter a valid 10-digit Indian phone number",
       });
     }
 
     const lock = acquireOtpSendLock(normalizedPhone);
     if (!lock.allowed) {
       return res.status(429).json({
+        success: false,
         message: lock.reason,
       });
     }
@@ -1440,14 +1474,13 @@ app.post(
         "SELECT id FROM users WHERE phone=?",
         [normalizedPhone],
         async (err, result) => {
-
           if (err) {
             console.log(err);
             releaseOtpSendLock(normalizedPhone, false);
 
             return res.status(500).json({
-              message:
-                "Database Error",
+              success: false,
+              message: "Database Error",
             });
           }
 
@@ -1455,23 +1488,19 @@ app.post(
             releaseOtpSendLock(normalizedPhone, false);
 
             return res.status(404).json({
-              message:
-                "No account found with this phone number",
+              success: false,
+              message: "No account found with this phone number",
             });
           }
 
           try {
-
-            const otp =
-              generateOTP();
+            const otp = generateOTP();
 
             otpStore.set(
               `${normalizedPhone}:reset`,
               {
                 otp,
-                expiresAt:
-                  Date.now() +
-                  5 * 60 * 1000,
+                expiresAt: Date.now() + 5 * 60 * 1000,
                 verified: false,
               }
             );
@@ -1487,10 +1516,9 @@ app.post(
 
             releaseOtpSendLock(normalizedPhone, true);
 
-            res.json({
+            return res.json({
               success: true,
-              message:
-                "Password reset OTP sent",
+              message: "Password reset OTP sent",
             });
 
           } catch (error) {
@@ -1501,7 +1529,8 @@ app.post(
               error.message
             );
 
-            res.status(500).json({
+            return res.status(500).json({
+              success: false,
               message:
                 error.message ||
                 "Failed to send OTP",
@@ -1513,7 +1542,8 @@ app.post(
       releaseOtpSendLock(normalizedPhone, false);
       console.log(error);
 
-      res.status(500).json({
+      return res.status(500).json({
+        success: false,
         message: "Failed to send OTP",
       });
     }
@@ -1863,7 +1893,7 @@ app.post("/add-job", authenticateToken, requireRole("employer"), async (req, res
                   notificationSql,
                   [
                     worker.id,
-                    "new_job",
+                    "job",
                     "New Job Posted",
                     notificationMessage,
                     jobId,

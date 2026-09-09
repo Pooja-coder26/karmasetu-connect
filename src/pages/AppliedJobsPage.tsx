@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { socket } from '../lib/socket';
 import { getAuthHeaders } from '../lib/authHeader';
@@ -41,8 +42,10 @@ interface AppliedJob {
 
 export default function AppliedJobsPage() {
   const { profile } = useAuth();
+  const location = useLocation();
   const [applications, setApplications] = useState<AppliedJob[]>([]);
   const [loading, setLoading] = useState(true);
+  const [highlightedAppId, setHighlightedAppId] = useState<number | null>(null);
 
   // Filter: ALL | APPLIED | HIRED | COMPLETED
   const [activeFilter, setActiveFilter] = useState<'ALL' | 'APPLIED' | 'HIRED' | 'COMPLETED'>('ALL');
@@ -168,6 +171,72 @@ export default function AppliedJobsPage() {
     }
   };
 
+  /* =========================================
+     HANDLE NOTIFICATION DEEP LINK NAVIGATION
+  ========================================= */
+  useEffect(() => {
+    const navState = location.state as {
+      jobId?: number | string;
+      applicationId?: number | string;
+      notifType?: string;
+    } | null;
+
+    if (
+      !navState ||
+      (!navState.jobId && !navState.applicationId) ||
+      applications.length === 0
+    ) {
+      return;
+    }
+
+    const targetAppId = navState.applicationId ? Number(navState.applicationId) : null;
+    const targetJobId = navState.jobId ? Number(navState.jobId) : null;
+
+    const matchedApp = applications.find(
+      (app) =>
+        (targetAppId && Number(app.id) === targetAppId) ||
+        (targetJobId && Number(app.job_id) === targetJobId)
+    );
+
+    if (matchedApp) {
+      const effStatus = getEffectiveStatus(matchedApp);
+
+      // Ensure the active tab filter allows the matched item to be visible
+      if (
+        (activeFilter === 'APPLIED' && effStatus !== 'APPLIED' && effStatus !== 'REJECTED' && effStatus !== 'NOSHOW') ||
+        (activeFilter === 'HIRED' && effStatus !== 'HIRED') ||
+        (activeFilter === 'COMPLETED' && effStatus !== 'COMPLETED')
+      ) {
+        setActiveFilter('ALL');
+      }
+
+      setHighlightedAppId(matchedApp.id);
+      setSelectedJobForDetails(matchedApp);
+
+      const timer = setTimeout(() => {
+        const el = document.getElementById(`application-card-${matchedApp.id}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 350);
+
+      const clearTimer = setTimeout(() => {
+        setHighlightedAppId((prev) => (prev === matchedApp.id ? null : prev));
+      }, 4500);
+
+      try {
+        window.history.replaceState({}, document.title);
+      } catch {
+        // Ignore
+      }
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(clearTimer);
+      };
+    }
+  }, [location.state, applications, activeFilter]);
+
   return (
     <div className="space-y-8">
       {/* HEADER */}
@@ -270,7 +339,12 @@ export default function AppliedJobsPage() {
             return (
               <div
                 key={app.id}
-                className="glass-card p-6 transition-all hover:border-slate-600/60"
+                id={`application-card-${app.id}`}
+                className={`glass-card p-6 transition-all duration-500 hover:border-slate-600/60 ${
+                  highlightedAppId === app.id
+                    ? 'ring-2 ring-cyan-400 bg-cyan-950/40 shadow-lg shadow-cyan-500/20'
+                    : ''
+                }`}
               >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                   {/* LEFT: JOB INFO */}

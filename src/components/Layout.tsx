@@ -16,6 +16,7 @@ import {
   X,
   User,
   ShieldCheck,
+  AlertCircle,
 } from 'lucide-react';
 
 import { socket } from '../lib/socket';
@@ -25,7 +26,7 @@ import { API_BASE_URL } from '../lib/config';
 interface Notification {
   id: number | string;
   user_id?: number;
-  type: 'application' | 'hired' | 'job' | 'completed';
+  type: string;
   title: string;
   message: string;
   job_id?: number | null;
@@ -53,6 +54,8 @@ export default function Layout({
 
   const notificationRef =
     useRef<HTMLDivElement | null>(null);
+  const isNavigatingRef =
+    useRef(false);
 
   /* ==========================================
      LOAD NOTIFICATIONS FROM DATABASE
@@ -475,39 +478,90 @@ export default function Layout({
      CLICK NOTIFICATION
   ========================================== */
 
-  const handleNotificationClick = async (
+  const handleNotificationClick = (
     notification: Notification
   ) => {
-    await markAsRead(notification);
+    // Prevent double-clicks / rapid re-entry
+    if (isNavigatingRef.current) return;
+    isNavigatingRef.current = true;
+    setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 600);
 
+    // Optimistically mark as read in local state & trigger background update
+    markAsRead(notification);
+
+    // Close notification dropdown
     setShowNotifications(false);
 
-    if (
-      notification.type === 'job'
-    ) {
-      navigate('/jobs');
+    const userRole = profile?.role;
+    const isEmployerRole = userRole === 'employer';
+    const isAdminRole = userRole === 'admin';
+
+    // 1. ADMIN
+    if (isAdminRole) {
+      navigate('/admin');
       return;
     }
 
-    if (
-      notification.type === 'application'
-    ) {
+    // 2. EMPLOYER NAVIGATION
+    if (isEmployerRole) {
+      if (notification.type === 'application') {
+        if (notification.job_id) {
+          navigate(`/applicants/${notification.job_id}`);
+        } else {
+          navigate('/my-jobs');
+        }
+        return;
+      }
+
+      if (notification.type === 'job' || notification.type === 'new_job') {
+        navigate('/my-jobs', {
+          state: { jobId: notification.job_id },
+        });
+        return;
+      }
+
       if (notification.job_id) {
-        navigate(
-          `/applicants/${notification.job_id}`
-        );
+        navigate(`/applicants/${notification.job_id}`);
       } else {
         navigate('/my-jobs');
       }
+      return;
+    }
 
+    // 3. WORKER NAVIGATION
+    if (notification.type === 'job' || notification.type === 'new_job') {
+      navigate('/jobs', {
+        state: { jobId: notification.job_id },
+      });
       return;
     }
 
     if (
       notification.type === 'hired' ||
-      notification.type === 'completed'
+      notification.type === 'completed' ||
+      notification.type === 'rejected' ||
+      notification.type === 'noshow' ||
+      notification.type === 'application'
     ) {
-      navigate('/applied-jobs');
+      navigate('/applied-jobs', {
+        state: {
+          jobId: notification.job_id,
+          applicationId: notification.application_id,
+          notifType: notification.type,
+        },
+      });
+      return;
+    }
+
+    // Fallback for any unknown notification types
+    if (notification.job_id) {
+      navigate('/jobs', {
+        state: { jobId: notification.job_id },
+      });
+    } else {
+      navigate('/jobs');
     }
   };
 
@@ -830,8 +884,8 @@ export default function Layout({
                             >
 
                               <div className="mt-0.5 shrink-0">
-                                {notification.type ===
-                                  'job' && (
+                                {(notification.type === 'job' ||
+                                  notification.type === 'new_job') && (
                                   <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
                                     <Briefcase className="w-4 h-4" />
                                   </div>
@@ -855,6 +909,19 @@ export default function Layout({
                                   'completed' && (
                                   <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center">
                                     <CheckCheck className="w-4 h-4" />
+                                  </div>
+                                )}
+
+                                {(notification.type === 'rejected' ||
+                                  notification.type === 'noshow') && (
+                                  <div className="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center">
+                                    <AlertCircle className="w-4 h-4" />
+                                  </div>
+                                )}
+
+                                {!['job', 'new_job', 'application', 'hired', 'completed', 'rejected', 'noshow'].includes(notification.type) && (
+                                  <div className="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                                    <Bell className="w-4 h-4" />
                                   </div>
                                 )}
                               </div>

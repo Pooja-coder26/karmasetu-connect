@@ -119,6 +119,16 @@ function App() {
                       }
                     />
 
+                    {/* Worker - Route Aliases */}
+                    <Route
+                      path="/find-jobs"
+                      element={<Navigate to="/jobs" replace />}
+                    />
+                    <Route
+                      path="/explore-jobs"
+                      element={<Navigate to="/jobs" replace />}
+                    />
+
                     {/* Worker - Applied Jobs */}
                     <Route
                       path="/applied-jobs"

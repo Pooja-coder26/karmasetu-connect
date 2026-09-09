@@ -1,6 +1,7 @@
 
 declare const google: any;
 import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   MapPin,
@@ -190,9 +191,12 @@ const DISTANCE_OPTIONS = [
 
 export default function FindJobsPage() {
   const { profile } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
+  const [highlightedJobId, setHighlightedJobId] = useState<number | null>(null);
 
   const [searchTitle, setSearchTitle] = useState('');
   const [selectedWorkType, setSelectedWorkType] = useState('ALL');
@@ -280,6 +284,63 @@ export default function FindJobsPage() {
   useEffect(() => {
     initializeGoogleMaps();
   }, []);
+
+  /* =========================================
+     HANDLE NOTIFICATION DEEP LINK NAVIGATION
+  ========================================= */
+  useEffect(() => {
+    const navState = location.state as { jobId?: number | string } | null;
+    const targetJobId = navState?.jobId ? Number(navState.jobId) : null;
+    if (!targetJobId || jobs.length === 0) return;
+
+    // If target job is in all jobs but filtered out, reset filters so it is visible
+    const isInFiltered = filteredJobs.some((j) => j.id === targetJobId);
+    if (!isInFiltered && jobs.some((j) => j.id === targetJobId)) {
+      setSearchTitle('');
+      setSelectedWorkType('ALL');
+      setMinWage('');
+      setMaxWage('');
+      setSelectedDistance('ALL');
+      setSearchLocation('');
+      setSelectedLocationPlace(null);
+      setShowLocationSuggestions(false);
+      setNearbyOnly(false);
+      setFilteredJobs(jobs);
+    }
+
+    setHighlightedJobId(targetJobId);
+
+    const timer = setTimeout(() => {
+      const cardEl = document.getElementById(`job-card-${targetJobId}`);
+      if (cardEl) {
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      const targetJob = jobs.find((j) => j.id === targetJobId);
+      if (targetJob && targetJob.latitude && targetJob.longitude && mapInstance.current) {
+        mapInstance.current.panTo({
+          lat: Number(targetJob.latitude),
+          lng: Number(targetJob.longitude),
+        });
+        mapInstance.current.setZoom(16);
+      }
+    }, 350);
+
+    const clearHighlightTimer = setTimeout(() => {
+      setHighlightedJobId((prev) => (prev === targetJobId ? null : prev));
+    }, 4500);
+
+    try {
+      window.history.replaceState({}, document.title);
+    } catch {
+      // Ignore
+    }
+
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(clearHighlightTimer);
+    };
+  }, [location.state, jobs]);
 
   const searchTitleRef = useRef(searchTitle);
   const searchLocationRef = useRef(searchLocation);
@@ -1837,8 +1898,7 @@ export default function FindJobsPage() {
       alert(data);
 
       if (response.ok) {
-        window.location.href =
-          '/applied-jobs';
+        navigate('/applied-jobs');
       } else {
         fetchJobs();
       }
@@ -2411,8 +2471,12 @@ export default function FindJobsPage() {
 
               <div
                 key={job.id}
-
-                className="glass-card p-6"
+                id={`job-card-${job.id}`}
+                className={`glass-card p-6 transition-all duration-500 ${
+                  highlightedJobId === job.id
+                    ? 'ring-2 ring-cyan-400 bg-cyan-950/40 shadow-lg shadow-cyan-500/20'
+                    : ''
+                }`}
               >
 
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">

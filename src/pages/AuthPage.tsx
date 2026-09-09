@@ -66,6 +66,9 @@ export default function AuthPage() {
     useState(false);
 
   const isSendingOtpRef = useRef(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const isVerifyingOtpRef = useRef(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
   // --- Profile fields for registration ---
@@ -99,6 +102,52 @@ export default function AuthPage() {
   /* =====================================================
      HELPERS
   ===================================================== */
+
+  const validateAndFormatPhone = (
+    raw: string
+  ): { valid: boolean; error?: string; formatted?: string } => {
+    const trimmed = (raw || '').trim();
+    if (!trimmed) {
+      return {
+        valid: false,
+        error: 'Please enter your phone number before requesting an OTP',
+      };
+    }
+
+    // Strip spaces, dashes, parentheses
+    let digits = trimmed.replace(/[\s()-]/g, '');
+
+    // Normalize common Indian prefixes
+    if (digits.startsWith('+91')) {
+      digits = digits.slice(3);
+    } else if (digits.startsWith('91') && digits.length === 12) {
+      digits = digits.slice(2);
+    } else if (digits.startsWith('0') && digits.length === 11) {
+      digits = digits.slice(1);
+    }
+
+    // Must be exactly 10 digits
+    if (!/^\d{10}$/.test(digits)) {
+      return {
+        valid: false,
+        error: 'Please enter a valid 10-digit Indian phone number',
+      };
+    }
+
+    // Must start with 6, 7, 8, or 9
+    if (!/^[6-9]/.test(digits)) {
+      return {
+        valid: false,
+        error:
+          'Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9',
+      };
+    }
+
+    return {
+      valid: true,
+      formatted: `+91${digits}`,
+    };
+  };
 
   const isPhone =
     /^\+?[0-9]{10,15}$/.test(
@@ -145,7 +194,6 @@ export default function AuthPage() {
   const switchMode = (
     newMode: AuthMode
   ) => {
-
     setMode(newMode);
 
     setError('');
@@ -156,6 +204,10 @@ export default function AuthPage() {
     setOtpVerified(false);
     setResendCooldown(0);
     isSendingOtpRef.current = false;
+    setIsSendingOtp(false);
+    isVerifyingOtpRef.current = false;
+    setIsVerifyingOtp(false);
+    setLoading(false);
 
     setPassword('');
     setConfirmPassword('');
@@ -177,85 +229,67 @@ export default function AuthPage() {
   ===================================================== */
 
   const sendOtp = async (isResend: boolean = false) => {
-
     resetMessages();
 
-    // Prevent double-clicks or multiple simultaneous requests
-    if (isSendingOtpRef.current || loading) {
+    // Line 1: Immediate synchronous lock to prevent duplicate requests before re-render
+    if (isSendingOtpRef.current || isSendingOtp || loading) {
       return;
     }
+    isSendingOtpRef.current = true;
+    setIsSendingOtp(true);
 
-    if (!identifier) {
-
-      setError(
-        'Please enter your phone number'
-      );
-
-      return;
-    }
-
-    const phone =
-      cleanPhone.startsWith('+')
-        ? cleanPhone
-        : `+91${cleanPhone}`;
-
-
-    if (
-      !/^\+[0-9]{10,15}$/.test(phone)
-    ) {
-
-      setError(
-        'Enter a valid phone number'
-      );
-
-      return;
-    }
-
+    // Cooldown check for resend
     if (isResend && resendCooldown > 0) {
       setError(
         `Please wait ${resendCooldown} seconds before requesting another OTP`
       );
+      isSendingOtpRef.current = false;
+      setIsSendingOtp(false);
       return;
     }
 
-    isSendingOtpRef.current = true;
+    // Strict client-side phone validation
+    const validation = validateAndFormatPhone(identifier);
+    if (!validation.valid || !validation.formatted) {
+      setError(
+        validation.error || 'Please enter a valid phone number'
+      );
+      isSendingOtpRef.current = false;
+      setIsSendingOtp(false);
+      return;
+    }
+
+    const phone = validation.formatted;
     setLoading(true);
 
     try {
-
       const endpoint =
         mode === 'forgot'
           ? `${API_BASE_URL}/forgot-password/send-otp`
           : `${API_BASE_URL}/send-otp`;
 
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone,
+        }),
+      });
 
-      const response =
-        await fetch(endpoint, {
-          method: 'POST',
-
-          headers: {
-            'Content-Type':
-              'application/json',
-          },
-
-          body: JSON.stringify({
-            phone,
-          }),
-        });
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.message ||
-          'Failed to send OTP'
-        );
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch {
+        // Fallback for non-JSON or empty response
       }
 
+      if (!response.ok) {
+        throw new Error(
+          data.message || 'Failed to send OTP'
+        );
+      }
 
       setOtpSent(true);
       setResendCooldown(30);
@@ -267,16 +301,14 @@ export default function AuthPage() {
       );
 
     } catch (err: unknown) {
-
       setError(
         err instanceof Error
           ? err.message
           : 'Failed to send OTP'
       );
-
     } finally {
-
       isSendingOtpRef.current = false;
+      setIsSendingOtp(false);
       setLoading(false);
     }
   };
@@ -287,77 +319,73 @@ export default function AuthPage() {
   ===================================================== */
 
   const verifyOtp = async () => {
-
     resetMessages();
 
-    if (!otp) {
-
-      setError(
-        'Please enter the OTP'
-      );
-
+    if (isVerifyingOtpRef.current || isVerifyingOtp || loading) {
       return;
     }
 
+    const cleanOtp = String(otp || '').trim();
+    if (!cleanOtp) {
+      setError('Please enter the OTP');
+      return;
+    }
 
-    const phone =
-      cleanPhone.startsWith('+')
-        ? cleanPhone
-        : `+91${cleanPhone}`;
+    if (!/^\d{6}$/.test(cleanOtp)) {
+      setError('Please enter a valid 6-digit OTP');
+      return;
+    }
 
+    const validation = validateAndFormatPhone(identifier);
+    if (!validation.valid || !validation.formatted) {
+      setError(validation.error || 'Please enter a valid phone number');
+      return;
+    }
 
+    const phone = validation.formatted;
+
+    isVerifyingOtpRef.current = true;
+    setIsVerifyingOtp(true);
     setLoading(true);
 
     try {
+      const response = await fetch(
+        `${API_BASE_URL}/verify-otp`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            phone,
+            code: cleanOtp,
+          }),
+        }
+      );
 
-      const response =
-        await fetch(
-          `${API_BASE_URL}/verify-otp`,
-          {
-            method: 'POST',
-
-            headers: {
-              'Content-Type':
-                'application/json',
-            },
-
-            body: JSON.stringify({
-              phone,
-              code: otp,
-            }),
-          }
-        );
-
-
-      const data =
-        await response.json();
-
+      let data: any = {};
+      try {
+        data = await response.json();
+      } catch {}
 
       if (!response.ok) {
-
         throw new Error(
-          data.message ||
-          'Invalid OTP'
+          data.message || 'Invalid OTP'
         );
       }
 
-
       setOtpVerified(true);
-
-      setSuccess(
-        'Phone number verified successfully!'
-      );
+      setSuccess('Phone number verified successfully!');
 
     } catch (err: unknown) {
-
       setError(
         err instanceof Error
           ? err.message
           : 'Invalid OTP'
       );
-
     } finally {
-
+      isVerifyingOtpRef.current = false;
+      setIsVerifyingOtp(false);
       setLoading(false);
     }
   };
@@ -567,10 +595,13 @@ export default function AuthPage() {
           }
 
 
-          const phone =
-            cleanPhone.startsWith('+')
-              ? cleanPhone
-              : `+91${cleanPhone}`;
+          const validation = validateAndFormatPhone(identifier);
+          if (!validation.valid || !validation.formatted) {
+            setError(validation.error || 'Please enter a valid phone number');
+            return;
+          }
+
+          const phone = validation.formatted;
 
 
           setLoading(true);
@@ -1084,11 +1115,11 @@ export default function AuthPage() {
                   <button
                     type="button"
                     onClick={() => sendOtp(false)}
-                    disabled={loading}
-                    className="w-full py-3 rounded-2xl font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white"
+                    disabled={isSendingOtp || loading || !identifier.trim() || resendCooldown > 0}
+                    className="w-full py-3 rounded-2xl font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   >
 
-                    {loading
+                    {isSendingOtp
                       ? 'Sending OTP...'
                       : 'Send OTP'}
 
@@ -1226,10 +1257,12 @@ export default function AuthPage() {
                           setOtp('');
                           sendOtp(true);
                         }}
-                        disabled={loading || resendCooldown > 0}
+                        disabled={isSendingOtp || loading || resendCooldown > 0 || !identifier.trim()}
                         className="text-cyan-400 hover:text-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                       >
-                        {resendCooldown > 0
+                        {isSendingOtp
+                          ? 'Sending...'
+                          : resendCooldown > 0
                           ? `Resend OTP in ${resendCooldown}s`
                           : 'Resend OTP'}
                       </button>
@@ -1589,11 +1622,11 @@ export default function AuthPage() {
                       <button
                         type="button"
                         onClick={() => sendOtp(false)}
-                        disabled={loading}
-                        className="w-full py-3 rounded-2xl border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 font-semibold hover:bg-cyan-500/20"
+                        disabled={isSendingOtp || loading || !identifier.trim() || resendCooldown > 0}
+                        className="w-full py-3 rounded-2xl border border-cyan-500/40 bg-cyan-500/10 text-cyan-400 font-semibold hover:bg-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
 
-                        {loading
+                        {isSendingOtp
                           ? 'Sending OTP...'
                           : 'Send SMS OTP'}
 
@@ -1627,11 +1660,11 @@ export default function AuthPage() {
                         <button
                           type="button"
                           onClick={verifyOtp}
-                          disabled={loading}
-                          className="w-full py-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold"
+                          disabled={isVerifyingOtp || loading || otp.trim().length !== 6}
+                          className="w-full py-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                         >
 
-                          {loading
+                          {isVerifyingOtp
                             ? 'Verifying...'
                             : 'Verify OTP'}
 
@@ -1645,10 +1678,12 @@ export default function AuthPage() {
                               setOtp('');
                               sendOtp(true);
                             }}
-                            disabled={loading || resendCooldown > 0}
+                            disabled={isSendingOtp || loading || resendCooldown > 0 || !identifier.trim()}
                             className="text-cyan-400 hover:text-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                           >
-                            {resendCooldown > 0
+                            {isSendingOtp
+                              ? 'Sending...'
+                              : resendCooldown > 0
                               ? `Resend OTP in ${resendCooldown}s`
                               : 'Resend OTP'}
                           </button>
