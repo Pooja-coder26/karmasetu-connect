@@ -11,9 +11,13 @@ import {
   Flag,
   Ban,
   ShieldCheck,
+  Phone,
+  PhoneCall,
+  MessageCircle,
 } from 'lucide-react';
 import { getAuthHeaders } from '../lib/authHeader';
 import { API_BASE_URL } from '../lib/config';
+import { normalizeCallPhone, getWhatsAppUrl } from '../lib/contactUtils';
 import ReportModal from '../components/ReportModal';
 import BlockModal from '../components/BlockModal';
 
@@ -219,6 +223,54 @@ export default function ApplicantsPage() {
                   <div className="flex items-center gap-1.5 sm:gap-2 text-amber-400 font-semibold text-sm sm:text-base">
                     <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span>NO_SHOW (Job Reopened)</span>
+                  </div>
+                )}
+
+                {/* 📞 WORKER CONTACT DETAILS (AVAILABLE ONLY AFTER HIRING) */}
+                {['Hired', 'hired', 'Completed', 'completed'].includes(applicant.status) && (
+                  <div className="mt-3.5 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/90 border border-cyan-500/30 shadow-md space-y-2.5">
+                    <div className="flex items-center gap-2 text-cyan-400 font-semibold text-xs sm:text-sm">
+                      <Phone className="w-4 h-4" />
+                      <span>📞 Worker Contact Details</span>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-800">
+                      <div className="space-y-0.5">
+                        <p className="text-xs text-slate-400">Worker Name: <strong className="text-white font-medium">{applicant.worker_name}</strong></p>
+                        <p className="text-xs text-slate-400 flex items-center gap-1.5 flex-wrap">
+                          <span>Phone:</span>
+                          {applicant.worker_phone ? (
+                            <strong className="text-cyan-300 font-mono tracking-wide">{applicant.worker_phone}</strong>
+                          ) : (
+                            <span className="text-slate-500 italic">Contact number is not available.</span>
+                          )}
+                        </p>
+                      </div>
+
+                      {applicant.worker_phone ? (
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                          <a
+                            href={`tel:${normalizeCallPhone(applicant.worker_phone)}`}
+                            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-cyan-500/20"
+                            title={`Call ${applicant.worker_name}`}
+                          >
+                            <PhoneCall className="w-3.5 h-3.5" />
+                            <span>Call Worker</span>
+                          </a>
+
+                          <a
+                            href={getWhatsAppUrl(applicant.worker_phone, `Hi ${applicant.worker_name}, I am contacting you regarding your hired application on KarmaSetu Connect.`) || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20"
+                            title={`WhatsApp ${applicant.worker_name}`}
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>WhatsApp</span>
+                          </a>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 )}
               </div>

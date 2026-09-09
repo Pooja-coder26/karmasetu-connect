@@ -2482,15 +2482,21 @@ app.get(
         SELECT
           applications.id,
           applications.worker_id,
-          applications.worker_name,
+          COALESCE(worker_user.name, applications.worker_name) AS worker_name,
           applications.status,
           applications.job_id,
-          jobs.title
+          jobs.title,
+          CASE 
+            WHEN LOWER(applications.status) IN ('hired', 'completed') THEN worker_user.phone 
+            ELSE NULL 
+          END AS worker_phone
         FROM applications
         JOIN jobs
-          ON applications.job_id =
-             jobs.id
+          ON applications.job_id = jobs.id
+        LEFT JOIN users AS worker_user
+          ON CAST(applications.worker_id AS CHAR) = CAST(worker_user.id AS CHAR)
         WHERE applications.job_id = ?
+        ORDER BY applications.id DESC
       `;
 
       db.query(
@@ -2502,9 +2508,116 @@ app.get(
             return res.status(500).send("Database Error");
           }
 
-          res.json(result);
+          res.json(result || []);
         }
       );
+    });
+  }
+);
+
+/* =====================================================
+   GET SECURE CONTACT DETAILS FOR APPLICATION
+   Returns contact information strictly for hired applications to authorized users
+===================================================== */
+
+app.get(
+  "/applications/:id/contact",
+  authenticateToken,
+  (req, res) => {
+    const applicationId = Number(req.params.id);
+
+    if (!applicationId || isNaN(applicationId) || applicationId <= 0) {
+      return res.status(400).json({ message: "Invalid application ID" });
+    }
+
+    const sql = `
+      SELECT
+        applications.id,
+        applications.worker_id,
+        applications.status AS app_status,
+        applications.job_id,
+        jobs.employer_id,
+        jobs.title AS job_title,
+        jobs.status AS job_status,
+        COALESCE(worker_user.name, applications.worker_name) AS worker_name,
+        worker_user.phone AS worker_phone,
+        COALESCE(employer_user.name, 'Employer') AS employer_name,
+        employer_user.phone AS employer_phone
+      FROM applications
+      JOIN jobs ON applications.job_id = jobs.id
+      LEFT JOIN users AS worker_user ON CAST(applications.worker_id AS CHAR) = CAST(worker_user.id AS CHAR)
+      LEFT JOIN users AS employer_user ON CAST(jobs.employer_id AS CHAR) = CAST(employer_user.id AS CHAR)
+      WHERE applications.id = ?
+    `;
+
+    db.query(sql, [applicationId], (err, rows) => {
+      if (err) {
+        console.error("Fetch application contact error:", err);
+        return res.status(500).json({ message: "Database Error" });
+      }
+
+      if (!rows || rows.length === 0) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+
+      const app = rows[0];
+      const isWorker = Number(app.worker_id) === Number(req.user.id);
+      const isEmployer = Number(app.employer_id) === Number(req.user.id);
+      const isAdmin = req.user.role === "admin";
+
+      if (!isWorker && !isEmployer && !isAdmin) {
+        return res.status(403).json({
+          message: "Access denied: you are not authorized to view contact details for this application",
+        });
+      }
+
+      const statusLower = String(app.app_status || "").toLowerCase();
+      const isHired = statusLower === "hired" || statusLower === "completed" || String(app.job_status || "").toLowerCase() === "completed";
+
+      if (!isHired) {
+        return res.status(403).json({
+          message: "Contact details are available only after the worker has been hired.",
+        });
+      }
+
+      if (isEmployer && !isWorker) {
+        return res.json({
+          application_id: app.id,
+          job_id: app.job_id,
+          job_title: app.job_title,
+          status: app.app_status,
+          role: "worker",
+          name: app.worker_name,
+          phone: app.worker_phone || null,
+        });
+      }
+
+      if (isWorker && !isEmployer) {
+        return res.json({
+          application_id: app.id,
+          job_id: app.job_id,
+          job_title: app.job_title,
+          status: app.app_status,
+          role: "employer",
+          name: app.employer_name,
+          phone: app.employer_phone || null,
+        });
+      }
+
+      return res.json({
+        application_id: app.id,
+        job_id: app.job_id,
+        job_title: app.job_title,
+        status: app.app_status,
+        worker: {
+          name: app.worker_name,
+          phone: app.worker_phone || null,
+        },
+        employer: {
+          name: app.employer_name,
+          phone: app.employer_phone || null,
+        },
+      });
     });
   }
 );
@@ -2994,12 +3107,24 @@ app.get(
     let sql = `
       SELECT
         applications.*,
+        COALESCE(worker_user.name, applications.worker_name) AS worker_name,
         jobs.title AS job_title,
-        jobs.status AS job_status
+        jobs.status AS job_status,
+        CASE 
+          WHEN LOWER(applications.status) IN ('hired', 'completed') THEN worker_user.phone 
+          ELSE NULL 
+        END AS worker_phone,
+        CASE 
+          WHEN LOWER(applications.status) IN ('hired', 'completed') THEN employer_user.phone 
+          ELSE NULL 
+        END AS employer_phone
       FROM applications
       JOIN jobs
-        ON applications.job_id =
-           jobs.id
+        ON applications.job_id = jobs.id
+      LEFT JOIN users AS worker_user
+        ON CAST(applications.worker_id AS CHAR) = CAST(worker_user.id AS CHAR)
+      LEFT JOIN users AS employer_user
+        ON CAST(jobs.employer_id AS CHAR) = CAST(employer_user.id AS CHAR)
     `;
 
     const params = [];
@@ -3074,7 +3199,11 @@ app.get(
         jobs.location,
         jobs.employer_id AS employer_id,
         jobs.status AS job_status,
-        COALESCE(users.name, 'Employer') AS employer_name
+        COALESCE(users.name, 'Employer') AS employer_name,
+        CASE 
+          WHEN LOWER(applications.status) IN ('hired', 'completed') THEN users.phone 
+          ELSE NULL 
+        END AS employer_phone
       FROM applications
       JOIN jobs
         ON applications.job_id = jobs.id

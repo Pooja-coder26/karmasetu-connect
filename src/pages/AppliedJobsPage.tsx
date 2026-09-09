@@ -20,9 +20,13 @@ import {
   AlertTriangle,
   Flag,
   Ban,
+  Phone,
+  PhoneCall,
+  MessageCircle,
 } from 'lucide-react';
 import ReportModal from '../components/ReportModal';
 import BlockModal from '../components/BlockModal';
+import { normalizeCallPhone, getWhatsAppUrl } from '../lib/contactUtils';
 
 interface AppliedJob {
   id: number;
@@ -38,6 +42,7 @@ interface AppliedJob {
   job_status?: string; // Job status: 'OPEN' | 'HIRED' | 'COMPLETED'
   employer_id?: number | string;
   employer_name?: string;
+  employer_phone?: string | null;
 }
 
 export default function AppliedJobsPage() {
@@ -497,6 +502,61 @@ export default function AppliedJobsPage() {
                         </span>
                       </div>
                     )}
+
+                    {/* 📞 EMPLOYER CONTACT DETAILS (AVAILABLE ONLY AFTER HIRING) */}
+                    {(effStatus === 'HIRED' || effStatus === 'COMPLETED') && (
+                      <div className="mt-4 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-900/90 border border-emerald-500/30 shadow-md space-y-2.5">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs sm:text-sm">
+                            <Phone className="w-4 h-4" />
+                            <span>📞 Employer Contact Details</span>
+                          </div>
+                          <span className="text-[11px] text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                            🎉 Hired
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-800">
+                          <div className="space-y-0.5">
+                            <p className="text-xs text-slate-400">
+                              Employer Name: <strong className="text-white font-medium">{app.employer_name || 'Employer'}</strong>
+                            </p>
+                            <p className="text-xs text-slate-400 flex items-center gap-1.5 flex-wrap">
+                              <span>Phone:</span>
+                              {app.employer_phone ? (
+                                <strong className="text-cyan-300 font-mono tracking-wide">{app.employer_phone}</strong>
+                              ) : (
+                                <span className="text-slate-500 italic">Contact number is not available.</span>
+                              )}
+                            </p>
+                          </div>
+
+                          {app.employer_phone ? (
+                            <div className="flex flex-wrap items-center gap-2 shrink-0">
+                              <a
+                                href={`tel:${normalizeCallPhone(app.employer_phone)}`}
+                                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-cyan-500/20"
+                                title={`Call ${app.employer_name || 'Employer'}`}
+                              >
+                                <PhoneCall className="w-3.5 h-3.5" />
+                                <span>Call Employer</span>
+                              </a>
+
+                              <a
+                                href={getWhatsAppUrl(app.employer_phone, `Hi ${app.employer_name || 'Employer'}, I am contacting you regarding my hired application for "${app.job_title}" on KarmaSetu Connect.`) || '#'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20"
+                                title={`WhatsApp ${app.employer_name || 'Employer'}`}
+                              >
+                                <MessageCircle className="w-3.5 h-3.5" />
+                                <span>WhatsApp</span>
+                              </a>
+                            </div>
+                          ) : null}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* RIGHT: ACTION BUTTON */}
@@ -719,6 +779,66 @@ export default function AppliedJobsPage() {
                 </p>
               </div>
             </div>
+
+            {/* 📞 EMPLOYER CONTACT DETAILS IN MODAL (AFTER HIRING) */}
+            {(() => {
+              const modalEffStatus = getEffectiveStatus(selectedJobForDetails);
+              if (modalEffStatus !== 'HIRED' && modalEffStatus !== 'COMPLETED') return null;
+
+              return (
+                <div className="p-3.5 sm:p-4 rounded-xl bg-slate-900/90 border border-emerald-500/30 space-y-2.5">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2 text-emerald-400 font-semibold text-xs sm:text-sm">
+                      <Phone className="w-4 h-4" />
+                      <span>📞 Employer Contact Details</span>
+                    </div>
+                    <span className="text-[11px] text-emerald-400 font-medium bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                      🎉 Hired
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-800">
+                    <div className="space-y-0.5">
+                      <p className="text-xs text-slate-400">
+                        Employer Name: <strong className="text-white font-medium">{selectedJobForDetails.employer_name || 'Employer'}</strong>
+                      </p>
+                      <p className="text-xs text-slate-400 flex items-center gap-1.5 flex-wrap">
+                        <span>Phone:</span>
+                        {selectedJobForDetails.employer_phone ? (
+                          <strong className="text-cyan-300 font-mono tracking-wide">{selectedJobForDetails.employer_phone}</strong>
+                        ) : (
+                          <span className="text-slate-500 italic">Contact number is not available.</span>
+                        )}
+                      </p>
+                    </div>
+
+                    {selectedJobForDetails.employer_phone ? (
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        <a
+                          href={`tel:${normalizeCallPhone(selectedJobForDetails.employer_phone)}`}
+                          className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-cyan-500/20"
+                          title={`Call ${selectedJobForDetails.employer_name || 'Employer'}`}
+                        >
+                          <PhoneCall className="w-3.5 h-3.5" />
+                          <span>Call Employer</span>
+                        </a>
+
+                        <a
+                          href={getWhatsAppUrl(selectedJobForDetails.employer_phone, `Hi ${selectedJobForDetails.employer_name || 'Employer'}, I am contacting you regarding my hired application for "${selectedJobForDetails.job_title}" on KarmaSetu Connect.`) || '#'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20"
+                          title={`WhatsApp ${selectedJobForDetails.employer_name || 'Employer'}`}
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>WhatsApp</span>
+                        </a>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* MODAL FOOTER */}
             <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3 border-t border-slate-800">
