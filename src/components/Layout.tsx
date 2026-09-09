@@ -17,11 +17,22 @@ import {
   User,
   ShieldCheck,
   AlertCircle,
+  Volume2,
+  VolumeX,
+  Award,
+  CheckCircle2,
+  XCircle,
+  ArrowRight,
 } from 'lucide-react';
 
 import { socket } from '../lib/socket';
 import { getAuthHeaders } from '../lib/authHeader';
 import { API_BASE_URL } from '../lib/config';
+import {
+  playNotificationSound,
+  isNotificationSoundEnabled,
+  setNotificationSoundEnabled,
+} from '../lib/notificationSound';
 
 interface Notification {
   id: number | string;
@@ -57,6 +68,58 @@ export default function Layout({
   const isNavigatingRef =
     useRef(false);
 
+  // Notification sound setting
+  const [soundEnabled, setSoundEnabled] = useState(() => isNotificationSoundEnabled());
+
+  useEffect(() => {
+    const handleSoundChange = (e: any) => {
+      if (typeof e?.detail?.enabled === 'boolean') {
+        setSoundEnabled(e.detail.enabled);
+      } else {
+        setSoundEnabled(isNotificationSoundEnabled());
+      }
+    };
+    window.addEventListener('notificationSoundSettingChanged', handleSoundChange);
+    return () => {
+      window.removeEventListener('notificationSoundSettingChanged', handleSoundChange);
+    };
+  }, []);
+
+  const handleToggleSound = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    setNotificationSoundEnabled(next);
+    if (next) {
+      playNotificationSound('sound_test');
+    }
+  };
+
+  /* ==========================================
+     ACTIVE TOAST ALERT STATE & DEDUPLICATION
+  ========================================== */
+  const [activeToast, setActiveToast] = useState<Notification | null>(null);
+  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const knownNotificationIdsRef = useRef<Set<string | number>>(new Set());
+
+  const showToastAlert = (notif: Notification) => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    setActiveToast(notif);
+    toastTimerRef.current = setTimeout(() => {
+      setActiveToast(null);
+    }, 6000);
+  };
+
+  const dismissToast = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    setActiveToast(null);
+  };
+
   /* ==========================================
      LOAD NOTIFICATIONS FROM DATABASE
   ========================================== */
@@ -78,7 +141,17 @@ export default function Layout({
         throw new Error('Failed to load notifications');
       }
 
-      const data = await response.json();
+      const data: Notification[] = await response.json();
+
+      // Seed all existing database notification IDs so they NEVER trigger alert toasts or sound
+      if (Array.isArray(data)) {
+        data.forEach((item) => {
+          if (item.id != null) {
+            knownNotificationIdsRef.current.add(Number(item.id));
+            knownNotificationIdsRef.current.add(String(item.id));
+          }
+        });
+      }
 
       setNotifications(data);
     } catch (error) {
@@ -114,37 +187,48 @@ export default function Layout({
       socket.connect();
     }
 
-    /* ---------- NEW JOB ---------- */
-
-    const handleJobNotification = (
-      data: any
-    ) => {
-      if (
-        Number(data.user_id) !==
-        Number(profile.id)
-      ) {
+    const handleIncomingNotification = (data: any) => {
+      if (Number(data?.user_id) !== Number(profile.id)) {
         return;
       }
 
-      const notification =
-        data.notification;
-
+      const notification: Notification = data.notification;
       if (!notification) {
         return;
       }
 
+      // Deduplicate: check if this notification was already known / processed
+      const notifId = notification.id != null
+        ? notification.id
+        : `tmp-${notification.type}-${notification.job_id || ''}-${notification.application_id || ''}-${notification.message || ''}`;
+
+      if (
+        knownNotificationIdsRef.current.has(notifId) ||
+        (notification.id != null && (
+          knownNotificationIdsRef.current.has(Number(notification.id)) ||
+          knownNotificationIdsRef.current.has(String(notification.id))
+        ))
+      ) {
+        return; // Already processed! Zero duplicates.
+      }
+
+      // Register as known
+      knownNotificationIdsRef.current.add(notifId);
+      if (notification.id != null) {
+        knownNotificationIdsRef.current.add(Number(notification.id));
+        knownNotificationIdsRef.current.add(String(notification.id));
+      }
+
+      // Prepend to notifications list in dropdown
       setNotifications((prev) => {
         if (
           notification.id &&
           prev.some(
-            (item) =>
-              Number(item.id) ===
-              Number(notification.id)
+            (item) => Number(item.id) === Number(notification.id)
           )
         ) {
           return prev;
         }
-
         return [
           {
             ...notification,
@@ -153,138 +237,26 @@ export default function Layout({
           ...prev,
         ];
       });
+
+      // Show real-time alert toast
+      showToastAlert(notification);
+
+      // Play sound if user setting is ON (playNotificationSound checks isNotificationSoundEnabled and has 500ms debounce)
+      playNotificationSound('socket_notification');
     };
 
-    /* ---------- NEW APPLICATION ---------- */
-
-    const handleApplicationNotification = (
-      data: any
-    ) => {
-      if (
-        Number(data.user_id) !==
-        Number(profile.id)
-      ) {
-        return;
-      }
-
-      const notification =
-        data.notification;
-
-      if (!notification) {
-        return;
-      }
-
-      setNotifications((prev) => {
-        if (
-          notification.id &&
-          prev.some(
-            (item) =>
-              Number(item.id) ===
-              Number(notification.id)
-          )
-        ) {
-          return prev;
-        }
-
-        return [
-          {
-            ...notification,
-            is_read: false,
-          },
-          ...prev,
-        ];
-      });
-    };
-
-    /* ---------- WORKER HIRED ---------- */
-
-    const handleHiredNotification = (
-      data: any
-    ) => {
-      if (
-        Number(data.user_id) !==
-        Number(profile.id)
-      ) {
-        return;
-      }
-
-      const notification =
-        data.notification;
-
-      if (!notification) {
-        return;
-      }
-
-      setNotifications((prev) => {
-        if (
-          notification.id &&
-          prev.some(
-            (item) =>
-              Number(item.id) ===
-              Number(notification.id)
-          )
-        ) {
-          return prev;
-        }
-
-        return [
-          {
-            ...notification,
-            is_read: false,
-          },
-          ...prev,
-        ];
-      });
-    };
-
-    /* ==========================================
-       SOCKET EVENTS
-    ========================================== */
-
-    socket.on(
-      'jobNotification',
-      handleJobNotification
-    );
-
-    socket.on(
-      'applicationNotification',
-      handleApplicationNotification
-    );
-
-    socket.on(
-      'hiredNotification',
-      handleHiredNotification
-    );
-
-    socket.on(
-      'jobCompletedNotification',
-      handleHiredNotification
-    );
-
-    /* ==========================================
-       CLEANUP
-    ========================================== */
+    socket.on('jobNotification', handleIncomingNotification);
+    socket.on('applicationNotification', handleIncomingNotification);
+    socket.on('hiredNotification', handleIncomingNotification);
+    socket.on('jobCompletedNotification', handleIncomingNotification);
+    socket.on('adminNotification', handleIncomingNotification);
 
     return () => {
-      socket.off(
-        'jobNotification',
-        handleJobNotification
-      );
-
-      socket.off(
-        'applicationNotification',
-        handleApplicationNotification
-      );
-
-      socket.off(
-        'hiredNotification',
-        handleHiredNotification
-      );
-
-      socket.off(
-        'jobCompletedNotification',
-        handleHiredNotification
-      );
+      socket.off('jobNotification', handleIncomingNotification);
+      socket.off('applicationNotification', handleIncomingNotification);
+      socket.off('hiredNotification', handleIncomingNotification);
+      socket.off('jobCompletedNotification', handleIncomingNotification);
+      socket.off('adminNotification', handleIncomingNotification);
     };
   }, [profile?.id]);
 
@@ -631,6 +603,71 @@ export default function Layout({
   };
 
   /* ==========================================
+     TOAST ALERT NAVIGATION & STYLING
+  ========================================== */
+
+  const handleToastClick = () => {
+    if (!activeToast) return;
+    const notif = { ...activeToast };
+    dismissToast();
+    handleNotificationClick(notif);
+  };
+
+  const getToastDetails = (type?: string) => {
+    switch (type) {
+      case 'hired':
+        return {
+          icon: <Award className="w-5 h-5 text-emerald-400" />,
+          bgColor: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400',
+          badge: 'Hired',
+        };
+      case 'completed':
+        return {
+          icon: <CheckCircle2 className="w-5 h-5 text-emerald-400" />,
+          bgColor: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400',
+          badge: 'Completed',
+        };
+      case 'rejected':
+        return {
+          icon: <XCircle className="w-5 h-5 text-rose-400" />,
+          bgColor: 'bg-rose-500/15 border-rose-500/30 text-rose-400',
+          badge: 'Rejected',
+        };
+      case 'noshow':
+        return {
+          icon: <AlertCircle className="w-5 h-5 text-amber-400" />,
+          bgColor: 'bg-amber-500/15 border-amber-500/30 text-amber-400',
+          badge: 'No-Show',
+        };
+      case 'job':
+      case 'new_job':
+        return {
+          icon: <Briefcase className="w-5 h-5 text-cyan-400" />,
+          bgColor: 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400',
+          badge: 'New Job',
+        };
+      case 'application':
+        return {
+          icon: <FileText className="w-5 h-5 text-blue-400" />,
+          bgColor: 'bg-blue-500/15 border-blue-500/30 text-blue-400',
+          badge: 'Application',
+        };
+      case 'report':
+        return {
+          icon: <ShieldCheck className="w-5 h-5 text-purple-400" />,
+          bgColor: 'bg-purple-500/15 border-purple-500/30 text-purple-400',
+          badge: 'Report',
+        };
+      default:
+        return {
+          icon: <Bell className="w-5 h-5 text-cyan-400" />,
+          bgColor: 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400',
+          badge: 'Notification',
+        };
+    }
+  };
+
+  /* ==========================================
      LOGOUT
   ========================================== */
 
@@ -659,6 +696,53 @@ export default function Layout({
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
+
+      {/* REAL-TIME NOTIFICATION ALERT TOAST */}
+      {activeToast && (
+        <div
+          role="alert"
+          aria-live="assertive"
+          onClick={handleToastClick}
+          className="fixed top-[4.25rem] sm:top-20 right-3 sm:right-6 z-50 w-[calc(100%-1.5rem)] sm:w-96 max-w-sm sm:max-w-md bg-slate-900/95 backdrop-blur-xl border border-cyan-500/40 rounded-2xl p-3.5 sm:p-4 shadow-2xl shadow-cyan-950/60 cursor-pointer transition-all hover:scale-[1.01] hover:border-cyan-400 group animate-in slide-in-from-top-4 fade-in duration-300"
+        >
+          <div className="flex items-start gap-3">
+            {/* Icon */}
+            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl border flex items-center justify-center shrink-0 ${getToastDetails(activeToast.type).bgColor}`}>
+              {getToastDetails(activeToast.type).icon}
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0 pr-1">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                  {getToastDetails(activeToast.type).badge}
+                </span>
+                <span className="text-[11px] text-slate-400">Just now</span>
+              </div>
+              <h4 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-1">
+                {activeToast.title}
+              </h4>
+              <p className="text-xs text-slate-300 line-clamp-2 mt-0.5 leading-relaxed break-words">
+                {activeToast.message}
+              </p>
+              <div className="mt-2 flex items-center gap-1 text-[11px] font-medium text-cyan-400 group-hover:text-cyan-300 transition-colors">
+                <span>Tap to view details</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </div>
+            </div>
+
+            {/* Dismiss Button */}
+            <button
+              type="button"
+              onClick={dismissToast}
+              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+              title="Dismiss notification alert"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* HEADER */}
 
@@ -821,6 +905,20 @@ export default function Layout({
                       </div>
 
                       <div className="flex items-center gap-2">
+
+                        {/* Notification Sound Toggle */}
+                        <button
+                          type="button"
+                          onClick={handleToggleSound}
+                          className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                            soundEnabled
+                              ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400 hover:bg-cyan-500/25'
+                              : 'bg-slate-800 border-slate-700 text-slate-500 hover:text-slate-300'
+                          }`}
+                          title={soundEnabled ? 'Notification Sound: ON (click to mute)' : 'Notification Sound: OFF (click to enable)'}
+                        >
+                          {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+                        </button>
 
                         {unreadCount > 0 && (
                           <button

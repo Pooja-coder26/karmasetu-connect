@@ -3809,6 +3809,34 @@ app.post("/reports", authenticateToken, async (req, res) => {
       );
     });
 
+    // Notify Admins of new report
+    db.query("SELECT id FROM users WHERE role = 'admin'", (adminErr, adminRows) => {
+      if (!adminErr && Array.isArray(adminRows)) {
+        adminRows.forEach((admin) => {
+          const notifMsg = `New user report received: ${reason}.`;
+          db.query(
+            "INSERT INTO notifications (user_id, type, title, message, is_read) VALUES (?, 'report', 'New Report Submitted', ?, false)",
+            [admin.id, notifMsg],
+            (notifErr, notifResult) => {
+              if (!notifErr) {
+                io.emit("adminNotification", {
+                  user_id: admin.id,
+                  notification: {
+                    id: notifResult?.insertId || null,
+                    type: "report",
+                    title: "New Report Submitted",
+                    message: notifMsg,
+                    is_read: false,
+                    created_at: new Date(),
+                  },
+                });
+              }
+            }
+          );
+        });
+      }
+    });
+
     return res.status(201).json({
       message: "Report submitted successfully.",
       reportId: insertResult.insertId,

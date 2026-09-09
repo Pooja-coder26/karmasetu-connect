@@ -14,10 +14,17 @@ import {
   Lock,
   ArrowLeft,
   CheckCircle,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
 
 import type { Role } from '../types/database';
 import { API_BASE_URL } from '../lib/config';
+import {
+  playNotificationSound,
+  isNotificationSoundEnabled,
+  setNotificationSoundEnabled,
+} from '../lib/notificationSound';
 
 type AuthMode = 'login' | 'register' | 'forgot';
 
@@ -91,6 +98,32 @@ export default function AuthPage() {
     }, 1000);
     return () => clearTimeout(timer);
   }, [resendCooldown]);
+
+  // Notification Sound setting state
+  const [soundEnabled, setSoundEnabled] = useState(() => isNotificationSoundEnabled());
+
+  useEffect(() => {
+    const handleSoundChange = (e: any) => {
+      if (typeof e?.detail?.enabled === 'boolean') {
+        setSoundEnabled(e.detail.enabled);
+      } else {
+        setSoundEnabled(isNotificationSoundEnabled());
+      }
+    };
+    window.addEventListener('notificationSoundSettingChanged', handleSoundChange);
+    return () => {
+      window.removeEventListener('notificationSoundSettingChanged', handleSoundChange);
+    };
+  }, []);
+
+  const handleToggleSound = () => {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    setNotificationSoundEnabled(next);
+    if (next) {
+      playNotificationSound('sound_test');
+    }
+  };
 
   const { signUp, signIn } =
     useAuth();
@@ -300,6 +333,9 @@ export default function AuthPage() {
           : 'OTP sent successfully to your phone.'
       );
 
+      // Play configured notification sound for OTP sent successfully if setting is ON
+      playNotificationSound(mode === 'forgot' ? 'password_reset_otp_sent' : 'otp_sent');
+
     } catch (err: unknown) {
       setError(
         err instanceof Error
@@ -376,6 +412,9 @@ export default function AuthPage() {
 
       setOtpVerified(true);
       setSuccess('Phone number verified successfully!');
+
+      // Play configured notification sound for OTP verified successfully if setting is ON
+      playNotificationSound('otp_verified');
 
     } catch (err: unknown) {
       setError(
@@ -458,6 +497,9 @@ export default function AuthPage() {
               // Ignore if browser permission or user declines
             }
           }
+
+          // Play configured notification sound for login success if setting is ON
+          playNotificationSound('login_success');
 
           navigate('/');
 
@@ -618,6 +660,9 @@ export default function AuthPage() {
               profileData
             );
 
+            // Play configured notification sound for registration completed successfully if setting is ON
+            playNotificationSound('registration_success');
+
             navigate('/');
 
           } catch (err: unknown) {
@@ -666,6 +711,9 @@ export default function AuthPage() {
             false,
             profileData
           );
+
+          // Play configured notification sound for registration completed successfully if setting is ON
+          playNotificationSound('registration_success');
 
           navigate('/');
 
@@ -788,6 +836,9 @@ export default function AuthPage() {
         setSuccess(
           'Password reset successfully! You can now login.'
         );
+
+        // Play configured notification sound for password changed successfully if setting is ON
+        playNotificationSound('password_changed');
 
 
         setTimeout(() => {
@@ -935,32 +986,53 @@ export default function AuthPage() {
           <div className="bg-slate-900/70 backdrop-blur-2xl border border-slate-700/40 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl">
 
 
-            {/* MOBILE LOGO */}
-
-            <div className="lg:hidden text-center mb-6 sm:mb-8">
-
-              <div className="inline-flex items-center gap-3">
-
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center">
-
-                  <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-
+            {/* Top Bar with Branding & Notification Sound Toggle */}
+            <div className="flex items-center justify-between mb-5 sm:mb-6">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center lg:hidden">
+                  <Briefcase className="w-5 h-5 text-white" />
                 </div>
-
-                <div className="text-left">
-
-                  <h1 className="text-xl sm:text-2xl font-bold text-white">
+                <div className="text-left lg:hidden">
+                  <h1 className="text-lg sm:text-xl font-bold text-white leading-tight">
                     KarmaSetu
                   </h1>
-
-                  <p className="text-slate-400 text-xs sm:text-sm">
+                  <p className="text-slate-400 text-[11px] sm:text-xs">
                     Hiring Platform
                   </p>
-
                 </div>
-
+                <div className="hidden lg:block text-left">
+                  <h2 className="text-lg font-bold text-white leading-tight">
+                    {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : 'Account Recovery'}
+                  </h2>
+                  <p className="text-slate-400 text-xs">
+                    {mode === 'login' ? 'Sign in to your account' : mode === 'register' ? 'Join as Worker or Employer' : 'Reset your password'}
+                  </p>
+                </div>
               </div>
 
+              {/* Notification Sound Toggle */}
+              <button
+                type="button"
+                onClick={handleToggleSound}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                  soundEnabled
+                    ? 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20'
+                    : 'bg-slate-800/60 border-slate-700/60 text-slate-400 hover:text-slate-200'
+                }`}
+                title={soundEnabled ? 'Notification Sound: ON (click to mute)' : 'Notification Sound: OFF (click to enable)'}
+              >
+                {soundEnabled ? (
+                  <>
+                    <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Sound ON</span>
+                  </>
+                ) : (
+                  <>
+                    <VolumeX className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Sound OFF</span>
+                  </>
+                )}
+              </button>
             </div>
 
 

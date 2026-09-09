@@ -20,7 +20,14 @@ import {
   Loader2,
   ShieldCheck,
   Ban,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
+import {
+  playNotificationSound,
+  isNotificationSoundEnabled,
+  setNotificationSoundEnabled,
+} from '../lib/notificationSound';
 
 /**
  * Compresses and scales an image file on the client side using HTML5 Canvas.
@@ -106,6 +113,32 @@ export default function ProfilePage() {
 
   // Track initial values to cancel edits cleanly
   const [initialData, setInitialData] = useState<any>(null);
+
+  // Notification Sound setting state
+  const [soundEnabled, setSoundEnabled] = useState(() => isNotificationSoundEnabled());
+
+  useEffect(() => {
+    const handleSoundChange = (e: any) => {
+      if (typeof e?.detail?.enabled === 'boolean') {
+        setSoundEnabled(e.detail.enabled);
+      } else {
+        setSoundEnabled(isNotificationSoundEnabled());
+      }
+    };
+    window.addEventListener('notificationSoundSettingChanged', handleSoundChange);
+    return () => {
+      window.removeEventListener('notificationSoundSettingChanged', handleSoundChange);
+    };
+  }, []);
+
+  const handleToggleSound = () => {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    setNotificationSoundEnabled(next);
+    if (next) {
+      playNotificationSound('sound_test');
+    }
+  };
 
   // Blocked Users Management State
   interface BlockedUser {
@@ -789,6 +822,44 @@ export default function ProfilePage() {
           </div>
         )}
       </form>
+
+      {/* NOTIFICATION SOUND PREFERENCES */}
+      <div className="glass-card bg-slate-900/90 border border-slate-800 p-4 sm:p-6 rounded-2xl shadow-xl space-y-4">
+        <div className="flex items-center justify-between gap-4 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+              {soundEnabled ? <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500" />}
+            </div>
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                <span>🔔</span>
+                <span>Notification Sound</span>
+              </h3>
+              <p className="text-xs text-slate-400">Play chime for incoming notifications, OTP events, and login/registration success</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleToggleSound}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                soundEnabled ? 'bg-cyan-500' : 'bg-slate-700'
+              }`}
+              title={soundEnabled ? 'Disable notification sound' : 'Enable notification sound'}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  soundEnabled ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+            <span className="text-xs font-semibold text-slate-300 w-8">
+              {soundEnabled ? 'ON' : 'OFF'}
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* BLOCKED USERS MANAGEMENT SECTION */}
       <div className="glass-card bg-slate-900/90 border border-slate-800 p-4 sm:p-6 rounded-2xl shadow-xl space-y-4">
