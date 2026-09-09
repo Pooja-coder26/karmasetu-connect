@@ -12,6 +12,8 @@ import {
   IndianRupee,
   Flag,
   Ban,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 
 import {
@@ -25,6 +27,7 @@ import { getAuthHeaders } from '../lib/authHeader';
 import { API_BASE_URL } from '../lib/config';
 import ReportModal from '../components/ReportModal';
 import BlockModal from '../components/BlockModal';
+import { useMapFullscreen } from '../lib/useMapFullscreen';
 import {
   searchIndiaLocations,
   searchLocalIndiaPlaces,
@@ -221,6 +224,7 @@ export default function FindJobsPage() {
   const searchTimeoutRef = useRef<any>(null);
 
   const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapInstance = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const userMarkerRef = useRef<any>(null);
@@ -260,6 +264,17 @@ export default function FindJobsPage() {
   const [selectedTravelMode, setSelectedTravelMode] = useState<TravelModeType>('DRIVING');
 
   const [activeMapType, setActiveMapType] = useState<'roadmap' | 'satellite'>('roadmap');
+
+  /* =========================================
+     MAP FULLSCREEN WITH POPSTATE / BACK BUTTON
+  ========================================= */
+  const {
+    isFullscreen: isMapFullscreen,
+    toggleFullscreen: toggleMapFullscreen,
+  } = useMapFullscreen({
+    mapInstanceRef: mapInstance,
+    containerRef: mapContainerRef,
+  });
 
   // Close location autocomplete dropdown on outside click
   useEffect(() => {
@@ -512,14 +527,6 @@ export default function FindJobsPage() {
           setActiveMapType('roadmap');
         }
       });
-
-      const handleFullscreenChange = () => {
-        if (mapInstance.current && typeof google !== 'undefined' && google.maps) {
-          google.maps.event.trigger(mapInstance.current, 'resize');
-        }
-      };
-      document.addEventListener('fullscreenchange', handleFullscreenChange);
-      document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 
       setMapReady(true);
     } catch (error) {
@@ -2390,36 +2397,69 @@ export default function FindJobsPage() {
           </div>
         )}
 
-        <div className="relative w-full h-[260px] sm:h-[340px] md:h-[400px] lg:h-[460px] rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
+        <div
+          ref={mapContainerRef}
+          className={
+            isMapFullscreen
+              ? 'fixed inset-0 z-50 bg-slate-950/95 p-2 sm:p-4 flex flex-col gap-2 backdrop-blur-md overflow-hidden'
+              : 'relative w-full h-[260px] sm:h-[340px] md:h-[400px] lg:h-[460px] rounded-2xl overflow-hidden border border-slate-800 shadow-xl'
+          }
+        >
           {/* Main Google Maps View */}
           <div
             ref={mapRef}
             className="w-full h-full"
           />
 
-          {/* Clean Map-Type Switcher Control: ROADMAP / SATELLITE (Positioned at TOP-LEFT of existing Map) */}
-          <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 flex items-center bg-slate-900/95 backdrop-blur-md rounded-xl p-0.5 sm:p-1 border border-slate-700 shadow-2xl">
+          {/* Clean Map Controls: ROADMAP / SATELLITE / FULLSCREEN (Positioned at TOP-LEFT of existing Map) */}
+          <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3 z-10 flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center bg-slate-900/95 backdrop-blur-md rounded-xl p-0.5 sm:p-1 border border-slate-700 shadow-2xl">
+              <button
+                type="button"
+                onClick={switchToRoadmap}
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  activeMapType === 'roadmap'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                }`}
+              >
+                ROADMAP
+              </button>
+              <button
+                type="button"
+                onClick={switchToSatellite}
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  activeMapType === 'satellite'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                }`}
+              >
+                SATELLITE
+              </button>
+            </div>
+
+            {/* FULLSCREEN / EXPAND TOGGLE BUTTON */}
             <button
               type="button"
-              onClick={switchToRoadmap}
-              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                activeMapType === 'roadmap'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+              onClick={toggleMapFullscreen}
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold rounded-xl shadow-2xl backdrop-blur-md flex items-center gap-1.5 cursor-pointer transition-all border ${
+                isMapFullscreen
+                  ? 'bg-rose-600 hover:bg-rose-500 text-white border-rose-500'
+                  : 'bg-slate-900/95 hover:bg-slate-800 text-slate-200 hover:text-white border-slate-700'
               }`}
+              title={isMapFullscreen ? 'Exit Fullscreen (Esc or Back)' : 'Expand Map to Fullscreen (⛶)'}
             >
-              ROADMAP
-            </button>
-            <button
-              type="button"
-              onClick={switchToSatellite}
-              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                activeMapType === 'satellite'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              SATELLITE
+              {isMapFullscreen ? (
+                <>
+                  <Minimize2 className="w-3.5 h-3.5" />
+                  <span>Exit Fullscreen</span>
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Fullscreen</span>
+                </>
+              )}
             </button>
           </div>
 

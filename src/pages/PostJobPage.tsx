@@ -21,6 +21,7 @@ import {
   searchLocalIndiaPlaces,
   PlaceSuggestion,
 } from '../lib/locationSearch';
+import { useMapFullscreen } from '../lib/useMapFullscreen';
 
 declare const google: any;
 
@@ -95,7 +96,6 @@ export default function PostJobPage() {
   const [loading, setLoading] = useState(false);
   const [confirmedCoords, setConfirmedCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Close suggestions on outside click
   useEffect(() => {
@@ -219,46 +219,16 @@ export default function PostJobPage() {
 
   /* =========================================
      FULLSCREEN TOGGLE & RESIZE LISTENER
+     With Browser History & Android Back Button Support
   ========================================= */
-  const toggleFullscreen = () => {
-    const next = !isFullscreen;
-    setIsFullscreen(next);
-
-    if (next && panelRef.current && panelRef.current.requestFullscreen) {
-      panelRef.current.requestFullscreen().catch(() => {});
-    } else if (!next && document.fullscreenElement) {
-      document.exitFullscreen().catch(() => {});
-    }
-
-    setTimeout(() => {
-      if (mapInstance.current && typeof google !== 'undefined' && google.maps) {
-        google.maps.event.trigger(mapInstance.current, 'resize');
-        if (confirmedCoords) {
-          mapInstance.current.setCenter(confirmedCoords);
-        }
-      }
-    }, 120);
-  };
-
-  useEffect(() => {
-    const handleFsChange = () => {
-      const isDocFs = !!document.fullscreenElement;
-      setIsFullscreen(isDocFs);
-      setTimeout(() => {
-        if (mapInstance.current && typeof google !== 'undefined' && google.maps) {
-          google.maps.event.trigger(mapInstance.current, 'resize');
-          if (confirmedCoords) {
-            mapInstance.current.setCenter(confirmedCoords);
-          }
-        }
-      }, 120);
-    };
-
-    document.addEventListener('fullscreenchange', handleFsChange);
-    return () => {
-      document.removeEventListener('fullscreenchange', handleFsChange);
-    };
-  }, [confirmedCoords]);
+  const {
+    isFullscreen,
+    toggleFullscreen,
+  } = useMapFullscreen({
+    mapInstanceRef: mapInstance,
+    containerRef: panelRef,
+    getCenterCoords: () => confirmedCoords,
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
